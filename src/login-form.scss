@@ -1,0 +1,139 @@
+// TODO RECIBIRLO POR EL COMPONENTE
+
+$app-border-radius: 2px;
+$primary-client-color: #1D7CE3;
+$secondary-client-color: #F0F0F0;
+
+.app-colored-main-font {
+    color: $primary-client-color;
+  }
+
+.app-input{
+     border-radius: $app-border-radius;
+    width: 100%;
+
+    //Para incluir los type multiples 
+    .ant-select-selector {
+      border-radius: $app-border-radius;
+      width: 100%;
+    }
+}
+.app-button {
+    border-radius: $app-border-radius !important;
+    background: $primary-client-color;
+    border-color: $primary-client-color;
+    color: white;
+
+    &:hover {
+      transition: all .5s;
+      background: $secondary-client-color;
+      color: white !important;
+      border-color: $secondary-client-color !important;
+    }
+
+    &.danger {
+      background: white;
+      color: red;
+      border-color: red;
+
+      &:hover {
+        color: red !important;
+        border-color: red !important;
+      }
+    }
+
+    &.blue-button {
+      background: #1D7CE3;
+      border-color: #1D7CE3;
+      color: white;
+
+      &:hover {
+        background: #1D7CE3;
+        color: white !important;
+        border-color: #1D7CE3 !important;
+      }
+    }
+
+    &.app-cart-button {
+      width: 90%;
+      margin-bottom: 10px;
+      padding: 5px 10px;
+    }
+
+    &.full{
+      width: 100%;
+    }
+
+    &.middle{
+      display: inline;
+      width: 50%;
+    }
+  }
+.app-link {
+    cursor: pointer;
+    color: $primary-client-color;
+
+    &.app-active-link {
+      color: $primary-client-color;
+
+      path{
+        color: $primary-client-color;
+        fill: $primary-client-color;
+      }
+    }
+
+    &.no-underline {
+      text-decoration: none;
+    }
+
+    &:hover:not(.no-hover),
+    &:active:not(.no-hover) {
+      color: $secondary-client-color;
+    }
+
+    &.no-hover:hover,
+    &.no-hover:active {
+      opacity: .9;
+    }
+  }
+.login-form{
+    min-width: 50%;
+
+    @media (max-width: 767px) {
+        transition: all .2s;
+        min-width: 70%;
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+        transition: all .2s;
+        min-width: 70%;
+    }
+
+    .error-message{
+        text-align: center;
+        color: red;
+        font-family: 'Montserrat';
+        margin-bottom: 20px;
+    }
+
+    .reminder-password-link{
+        width: 100%;
+        text-align: right;
+        margin-top: -20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-submit{
+        width: 100%;
+        margin-bottom: 20px;
+        border: none !important;
+    }
+
+    .not-register{
+        width: 100%;
+        text-align: center;
+        a{
+            text-decoration: none;
+        }
+    }
+}

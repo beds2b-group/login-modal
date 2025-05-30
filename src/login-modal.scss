@@ -1,0 +1,49 @@
+$app-border-radius: 2px;
+
+.app-modal {
+    color: #262626;
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+
+    .ant-modal-content {
+      border-radius: $app-border-radius;
+      padding: 0;
+
+      @media (max-width: 767px) {
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        overflow: auto;
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {}
+
+    }
+
+    .ant-modal-header {
+      border-bottom: 1px solid #f0f0f0;
+
+
+    }
+
+    &.no-header-boreder {
+      .ant-modal-header {
+        border-bottom: none;
+      }
+    }
+
+    .ant-modal-header {
+      padding: 20px 40px 20px 20px;
+    }
+
+    .ant-modal-body,
+    .ant-modal-footer {
+      padding: 20px;
+    }
+  }

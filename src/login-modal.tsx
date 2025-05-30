@@ -12,24 +12,40 @@ export interface DataLoginModalProps {
     notRegisterTest?: string,
 
 }
-
+export interface StylesForLoginModalProps {
+    primaryColor?: string,
+    secondaryColor?: string,
+    buttonBorderRadious?: string
+}
 export interface LoginModalProps {
     title: string,
-    className: string,
     visible: boolean,
     onCancel: () => void,
     data: DataLoginModalProps,
     onLogin: (username: string, password: string) => void,
     onForgetPassword: () => void,
     haveError: boolean,
-    getFormattedUrl: (path: string) => string
+    getFormattedUrl: (path: string) => string,
+    availableLanguages: string[],
+    defaultLanguage: string,
+    styles: StylesForLoginModalProps
 }
 
+export default function LoginModal({
+    title,
+    visible,
+    onCancel,
+    data,
+    onLogin,
+    onForgetPassword,
+    haveError,
+    defaultLanguage,
+    styles,
+    availableLanguages }: LoginModalProps) {
 
-export default function LoginModal({ title, visible, className, onCancel, data, onLogin, onForgetPassword, haveError, getFormattedUrl }: LoginModalProps) {
     return (
-        <Modal className={className} title={title} open={visible} footer={null} onCancel={onCancel}>
-            <LoginForm getFormattedUrl={getFormattedUrl} data={data} haveError={haveError} onLogin={onLogin} doingLogin={false} onForgetPassword={onForgetPassword} />
+        <Modal className="" title={title} open={visible} footer={null} onCancel={onCancel}>
+            <LoginForm styles={styles} defaultLanguage={defaultLanguage} availableLanguages={availableLanguages} data={data} haveError={haveError} onLogin={onLogin} doingLogin={false} onForgetPassword={onForgetPassword} />
         </Modal>
     );
 }
