@@ -25,3 +25,6 @@ yarn-error.log*
 
 # Mac y otros
 *.swp
+
+*storybook.log
+storybook-static

@@ -1,34 +1,32 @@
-// TODO RECIBIRLO POR EL COMPONENTE
-
-$app-border-radius: 2px;
-$primary-client-color: #1D7CE3;
-$secondary-client-color: #F0F0F0;
+:root{
+  --primary-client-color: #1D7CE3;
+  --secondary-client-color: #F0F0F0;
+}
 
 .app-colored-main-font {
-    color: $primary-client-color;
+    color: var(--primary-client-color);
   }
 
 .app-input{
-     border-radius: $app-border-radius;
+     border-radius: 2px;
     width: 100%;
 
-    //Para incluir los type multiples 
     .ant-select-selector {
-      border-radius: $app-border-radius;
+      border-radius: 2px;
       width: 100%;
     }
 }
 .app-button {
-    border-radius: $app-border-radius !important;
-    background: $primary-client-color;
-    border-color: $primary-client-color;
+    border-radius: 2px !important;
+    background: var(--primary-client-color);
+    border-color: var(--primary-client-color);
     color: white;
 
     &:hover {
       transition: all .5s;
-      background: $secondary-client-color;
+      background: var(--secondary-client-color);
       color: white !important;
-      border-color: $secondary-client-color !important;
+      border-color: var(--secondary-client-color) !important;
     }
 
     &.danger {
@@ -71,14 +69,14 @@ $secondary-client-color: #F0F0F0;
   }
 .app-link {
     cursor: pointer;
-    color: $primary-client-color;
+    color: var(--primary-client-color);
 
     &.app-active-link {
-      color: $primary-client-color;
+      color: var(--primary-client-color);
 
       path{
-        color: $primary-client-color;
-        fill: $primary-client-color;
+        color: var(--primary-client-color);
+        fill: var(--primary-client-color);
       }
     }
 
@@ -88,7 +86,7 @@ $secondary-client-color: #F0F0F0;
 
     &:hover:not(.no-hover),
     &:active:not(.no-hover) {
-      color: $secondary-client-color;
+      color: var(--secondary-client-color);
     }
 
     &.no-hover:hover,

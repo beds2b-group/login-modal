@@ -1,4 +1,4 @@
-$app-border-radius: 2px;
+
 
 .app-modal {
     color: #262626;
@@ -10,7 +10,7 @@ $app-border-radius: 2px;
 
 
     .ant-modal-content {
-      border-radius: $app-border-radius;
+      border-radius: 2px;
       padding: 0;
 
       @media (max-width: 767px) {

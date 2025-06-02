@@ -1,6 +1,6 @@
 import { Button, Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
-import './login-form.scss';
+import './login-form.css';
 import { LoadingOutlined } from "@ant-design/icons";
 import { DataLoginModalProps, StylesForLoginModalProps } from "./login-modal";
 
@@ -12,16 +12,15 @@ interface LoginFormComponentProps {
     data: DataLoginModalProps,
     availableLanguages: string[],
     defaultLanguage: string,
-    styles: StylesForLoginModalProps
+    urlToRegister?: string,
 }
 
-const LoginFormComponent = ({ onLogin, onForgetPassword, haveError, doingLogin, data, availableLanguages, defaultLanguage, styles }: LoginFormComponentProps) => {
+const LoginFormComponent = ({ onLogin, onForgetPassword, haveError, doingLogin, data, availableLanguages, defaultLanguage, urlToRegister }: LoginFormComponentProps) => {
 
     const [form] = useForm();
     const onFinish = (): void => {
         onLogin(form.getFieldValue("username"), form.getFieldValue("password"));
     }
-
     const IsLaguagePresentInUrl = (): boolean => availableLanguages.some(language => window.location.pathname.split("/").length > 0 && window.location.pathname.split("/")[1] == language)
     const GetLanguageInUrl = (): string => IsLaguagePresentInUrl() ? `/${window.location.pathname.split("/")[1]}` : '';
     const GetDefaultLanguage = (): string => defaultLanguage;
@@ -66,7 +65,7 @@ const LoginFormComponent = ({ onLogin, onForgetPassword, haveError, doingLogin, 
 
             </Form>
             <div className="not-register">
-                <a className="app-colored-main-font app-link" href={`${getFormattedUrl('register')}`} onClick={() => { window.location.href = getFormattedUrl('register') }}>{data.notRegisterTest || "I'm not registered"}</a>
+                <a className="app-colored-main-font app-link" href={`${urlToRegister ?? getFormattedUrl('register')}`}>{data.notRegisterTest || "I'm not registered"}</a>
             </div>
         </div>
     )
