@@ -1,0 +1,13 @@
+## Login modal web component
+
+Usamos este repositorio para buildear y exportar el dist/login-modal para usarlo como componente en cualquier lugar que use js.
+
+Para crear el nuevo fichero tan solo ejecutamos `` npm run build `` y se creará un fichero en dist/login-modal.js
+
+Este fichero lo copiamos y pegamos en la carpeta que queramos y la llamamos en el html como: 
+
+- `` <script src="../dist/login-modal.js"></script>``
+
+Una vez iniciado en el body de nuestro html el script, lo iniciamos 
+1. `` <login-modal id="modal"> </login-modal>`` . id para identificarlo después.
+2. Revisa el src/index.html para ver cómo funciona y que parámetros necesita
