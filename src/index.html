@@ -1,0 +1,52 @@
+<!-- ARCHIVO DE PRUEBA -->
+<html>
+  <head></head>
+  <body>
+    <login-modal id="modal"></login-modal>
+
+    <script src="../dist/login-modal.js"></script>
+    <script>
+        customElements.whenDefined('login-modal').then(() => {
+             const modal = document.getElementById("modal");
+             if (modal && typeof modal.setProps === "function") {
+                modal.setLanguage("es");
+                modal.setProps(
+                { 
+                visible: true,
+                doingLogin:false, 
+                styles:{
+                    primaryColor:"red",
+                    secondaryColor:"black"}, 
+                title: "Hola Mundo",
+                onCancel: () => alert("cerrado"),
+                onLogin: (username, password) => alert("cerrado"),
+                onForgetPassword: () => alert("cerrado"),
+                availableLanguages:["es","en"],
+                defaultLanguage: "es",
+                urlToRegister:"",
+                haveError: false,
+                })
+            }else {
+                console.error("modal.setProps no está disponible");
+            }
+            setTimeout(() => {
+                modal.setProps({ doingLogin:true, })
+                 modal.setLanguage("en");
+            }, 1000);
+            
+            setTimeout(() => {
+                modal.setProps({ doingLogin:false, })
+                 modal.setLanguage("es");
+            }, 5000);
+             setTimeout(() => {
+                modal.setProps({ visible:false, })
+                 
+            }, 3000);
+        }
+       
+);
+    </script>
+  </body>
+</html>
+
+<!-- ARCHIVO DE PRUEBA -->

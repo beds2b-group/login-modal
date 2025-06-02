@@ -1,10 +1,10 @@
-:root{
-  --primary-client-color: #1D7CE3;
-  --secondary-client-color: #F0F0F0;
+:host{
+  --primary-client-color-login-modal: #1D7CE3;
+  --secondary-client-color-login-modal: #F0F0F0;
 }
 
 .app-colored-main-font {
-    color: var(--primary-client-color);
+    color: var(--primary-client-color-login-modal);
   }
 
 .app-input{
@@ -18,15 +18,15 @@
 }
 .app-button {
     border-radius: 2px !important;
-    background: var(--primary-client-color);
-    border-color: var(--primary-client-color);
+    background: var(--primary-client-color-login-modal);
+    border-color: var(--primary-client-color-login-modal);
     color: white;
 
     &:hover {
       transition: all .5s;
-      background: var(--secondary-client-color);
+      background: var(--secondary-client-color-login-modal);
       color: white !important;
-      border-color: var(--secondary-client-color) !important;
+      border-color: var(--secondary-client-color-login-modal) !important;
     }
 
     &.danger {
@@ -69,14 +69,14 @@
   }
 .app-link {
     cursor: pointer;
-    color: var(--primary-client-color);
+    color: var(--primary-client-color-login-modal);
 
     &.app-active-link {
-      color: var(--primary-client-color);
+      color: var(--primary-client-color-login-modal);
 
       path{
-        color: var(--primary-client-color);
-        fill: var(--primary-client-color);
+        color: var(--primary-client-color-login-modal);
+        fill: var(--primary-client-color-login-modal);
       }
     }
 
@@ -86,7 +86,7 @@
 
     &:hover:not(.no-hover),
     &:active:not(.no-hover) {
-      color: var(--secondary-client-color);
+      color: var(--secondary-client-color-login-modal);
     }
 
     &.no-hover:hover,
@@ -135,3 +135,50 @@
         }
     }
 }
+.app-modal {
+    color: #262626;
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+
+    .ant-modal-content {
+      border-radius: 2px;
+      padding: 0;
+
+      @media (max-width: 767px) {
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        overflow: auto;
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {}
+
+    }
+
+    .ant-modal-header {
+      border-bottom: 1px solid #f0f0f0;
+
+
+    }
+
+    &.no-header-boreder {
+      .ant-modal-header {
+        border-bottom: none;
+      }
+    }
+
+    .ant-modal-header {
+      padding: 20px 40px 20px 20px;
+    }
+
+    .ant-modal-body,
+    .ant-modal-footer {
+      padding: 20px;
+    }
+  }

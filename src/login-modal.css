@@ -1,49 +1,154 @@
 
+.app-colored-main-font {
+  color: var(--primary-client-color-login-modal);
+}
+
+.app-input {
+  border-radius: 2px;
+  width: 100%;
+}
+.app-input .ant-select-selector {
+  border-radius: 2px;
+  width: 100%;
+}
+
+.app-button {
+  border-radius: 2px !important;
+  background: var(--primary-client-color-login-modal);
+  border-color: var(--primary-client-color-login-modal);
+  color: white;
+}
+.app-button:hover {
+  transition: all 0.5s;
+  background-color: var(--secondary-client-color-login-modal) !important;
+  color: white !important;
+  border-color: var(--secondary-client-color-login-modal) !important;
+}
+.app-button.danger {
+  background: white;
+  color: red;
+  border-color: red;
+}
+.app-button.danger:hover {
+  color: red !important;
+  border-color: red !important;
+}
+.app-button.blue-button {
+  background: #1D7CE3;
+  border-color: #1D7CE3;
+  color: white;
+}
+.app-button.blue-button:hover {
+  background: #1D7CE3;
+  color: white !important;
+  border-color: #1D7CE3 !important;
+}
+.app-button.app-cart-button {
+  width: 90%;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+}
+.app-button.full {
+  width: 100%;
+}
+.app-button.middle {
+  display: inline;
+  width: 50%;
+}
+
+.app-link {
+  cursor: pointer;
+  color: var(--primary-client-color-login-modal);
+}
+.app-link.app-active-link {
+  color: var(--primary-client-color-login-modal);
+}
+.app-link.app-active-link path {
+  color: var(--primary-client-color-login-modal);
+  fill: var(--primary-client-color-login-modal);
+}
+.app-link.no-underline {
+  text-decoration: none;
+}
+.app-link:hover:not(.no-hover), .app-link:active:not(.no-hover) {
+  color: var(--secondary-client-color-login-modal);
+}
+.app-link.no-hover:hover, .app-link.no-hover:active {
+  opacity: 0.9;
+}
+
+.login-form {
+  min-width: 50%;
+}
+@media (max-width: 767px) {
+  .login-form {
+    transition: all 0.2s;
+    min-width: 70%;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .login-form {
+    transition: all 0.2s;
+    min-width: 70%;
+  }
+}
+.login-form .error-message {
+  text-align: center;
+  color: red;
+  font-family: "Montserrat";
+  margin-bottom: 20px;
+}
+.login-form .reminder-password-link {
+  width: 100%;
+  text-align: right;
+  margin-top: -20px;
+  margin-bottom: 20px;
+}
+.login-form .btn-submit {
+  width: 100%;
+  margin-bottom: 20px;
+  border: none !important;
+}
+.login-form .not-register {
+  width: 100%;
+  text-align: center;
+}
+.login-form .not-register a {
+  text-decoration: none;
+}
 
 .app-modal {
-    color: #262626;
-    font-family: Roboto;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-
-
-    .ant-modal-content {
-      border-radius: 2px;
-      padding: 0;
-
-      @media (max-width: 767px) {
-        width: 100vw;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        overflow: auto;
-      }
-
-      @media (min-width: 768px) and (max-width: 1023px) {}
-
-    }
-
-    .ant-modal-header {
-      border-bottom: 1px solid #f0f0f0;
-
-
-    }
-
-    &.no-header-boreder {
-      .ant-modal-header {
-        border-bottom: none;
-      }
-    }
-
-    .ant-modal-header {
-      padding: 20px 40px 20px 20px;
-    }
-
-    .ant-modal-body,
-    .ant-modal-footer {
-      padding: 20px;
-    }
+  color: #262626;
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.app-modal .ant-modal-content {
+  border-radius: 2px;
+  padding: 0;
+}
+@media (max-width: 767px) {
+  .app-modal .ant-modal-content {
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow: auto;
   }
+}
+.app-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+}
+.app-modal.no-header-boreder .ant-modal-header {
+  border-bottom: none;
+}
+.app-modal .ant-modal-header {
+  padding: 20px 40px 20px 20px;
+}
+.app-modal .ant-modal-body,
+.app-modal .ant-modal-footer {
+  padding: 20px;
+}
