@@ -13,3 +13,5 @@ Este fichero lo copiamos y pegamos en la carpeta que queramos y la llamamos en e
 Una vez iniciado en el body de nuestro html el script, lo iniciamos 
 1. `` <login-modal id="modal"> </login-modal>`` . id para identificarlo después.
 2. Revisa el src/index.html para ver cómo funciona y que parámetros necesita, está ejemplificadas ambas versiones.
+
+LENGUAJES DISPONIBLES:  es, en, fr, pt, us

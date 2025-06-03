@@ -54,11 +54,7 @@ class LoginModalElement extends HTMLElement {
         shadow.appendChild(this.mountPoint);
         this.updateColors({});
     }
-    setLanguage(lang: string) {
-        i18n.changeLanguage(lang).then(() => {
-            this.renderReactComponent();
-        });
-    }
+
     connectedCallback() {
         if (!this.root) {
             this.root = ReactDOM.createRoot(this.mountPoint);
@@ -139,8 +135,15 @@ class LoginModalElement extends HTMLElement {
     ${css}
   `;
     };
+    private setLanguage(lang: string) {
+        i18n.changeLanguage(lang).then(() => {
+            this.renderReactComponent();
+        });
+    }
     private renderReactComponent() {
         if (!this.root) return;
+
+        this.setLanguage(this.props.defaultLanguage || "es");
         this.root.render(<LoginModal {...(this.props as LoginModalProps)} />);
     }
 }
