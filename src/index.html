@@ -13,11 +13,21 @@
     primary-color="#1D7CE3"   
     id="modal"
     title="Hola Mundo"
-    urlToRegister=""
+    url-to-register="/registro"
     />
 
     <script src="../dist/login-modal.js"></script>
     <script>
+        // dist login-modal-atributes.js EXAMPLE
+        customElements.whenDefined('login-modal').then(() => {
+        const modal = document.getElementById('modal');
+        modal.addEventListener('login', e => {
+            const { user, pass } = e.detail;
+            alert(`Logging in user ${user}`);
+        });
+        modal.addEventListener('forget-password', () => alert('forget password'));
+         });
+
         // dist login-modal.js EXAMPLE
         //         customElements.whenDefined('login-modal').then(() => {
         //              const modal = document.getElementById("modal");
