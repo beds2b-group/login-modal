@@ -4,70 +4,16 @@
   <body>
 
     <login-modal 
-
     visible="true" 
-    availableLanguages="['es','en']" 
-    doingLogin="false"  
-    default-language="en" 
+    language="en" 
     secondary-color="#F0F0F0" 
     primary-color="#1D7CE3"   
-    id="modal"
-    title="Hola Mundo"
     url-to-register="/registro"
-    />
+    client-app-domain="senator.beds2pro.com"
+    api-key="asdadada-asdasd2-ada2-ds"
+    > </login-modal>
 
     <script src="../dist/login-modal.js"></script>
-    <script>
-        // dist login-modal-atributes.js EXAMPLE
-        customElements.whenDefined('login-modal').then(() => {
-        const modal = document.getElementById('modal');
-        modal.addEventListener('login', e => {
-            const { user, pass } = e.detail;
-            alert(`Logging in user ${user}`);
-        });
-        modal.addEventListener('forget-password', () => alert('forget password'));
-         });
-
-        // dist login-modal.js EXAMPLE
-        //         customElements.whenDefined('login-modal').then(() => {
-        //              const modal = document.getElementById("modal");
-        //              if (modal && typeof modal.setProps === "function") {
-        //                 modal.setLanguage("es");
-        //                 modal.setProps(
-        //                 { 
-        //                 visible: true,
-        //                 doingLogin:false, 
-        //                 styles:{
-        //                     primaryColor:"red",
-        //                     secondaryColor:"black"}, 
-        //                 title: "Hola Mundo",
-        //                 onLogin: (username, password) => alert("logining"),
-        //                 onForgetPassword: () => alert("forget password"),
-        //                 availableLanguages:["es","en"],
-        //                 defaultLanguage: "es",
-        //                 urlToRegister:"",
-        //                 haveError: false,
-        //                 })
-        //             }else {
-        //                 console.error("modal.setProps no está disponible");
-        //             }
-        //             setTimeout(() => {
-        //                 modal.setProps({ doingLogin:true, })
-        //                  modal.setLanguage("en");
-        //             }, 1000);
-                    
-        //             setTimeout(() => {
-        //                 modal.setProps({ doingLogin:false, })
-        //                  modal.setLanguage("es");
-        //             }, 5000);
-        //              setTimeout(() => {
-        //                 modal.setProps({ visible:false, })
-                        
-        //             }, 3000);
-        //         }
-            
-        // );
-    </script>
   </body>
 </html>
 

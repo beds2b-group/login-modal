@@ -7,6 +7,7 @@ i18n
     resources: {
       en: {
         translation: {
+          title: "Login",
           usernamePlaceholder: "Username",
           passwordPlaceholder: "Password",
           requiredFieldError: "This field is required",
@@ -18,6 +19,7 @@ i18n
       },
       es: {
         translation: {
+          title: "Iniciar sesión",
           usernamePlaceholder: "Usuario",
           passwordPlaceholder: "Contraseña",
           requiredFieldError: "Este campo es obligatorio",
@@ -29,6 +31,7 @@ i18n
       },
       pt:{
         translation: {
+          title: "Login",
           usernamePlaceholder: "Usuário",
           passwordPlaceholder: "Senha",
           requiredFieldError: "Este campo é obrigatório",
@@ -40,6 +43,7 @@ i18n
       },
       fr:{
         translation: {
+          title: "Connexion",
           usernamePlaceholder: "Nom d'utilisateur",
           passwordPlaceholder: "Mot de passe",
           requiredFieldError: "Ce champ est obligatoire",
@@ -51,6 +55,7 @@ i18n
       },
       us:{
         translation: {
+          title: "Login",
           usernamePlaceholder: "Username",
           passwordPlaceholder: "Password",
           requiredFieldError: "This field is required",

@@ -12,16 +12,12 @@ export interface StylesForLoginModalProps {
     secondaryColor?: string,
 }
 export interface LoginModalProps {
-    title: string,
     visible: boolean,
-    doingLogin: boolean,
-    onLogin: (username: string, password: string) => void,
-    onForgetPassword: () => void,
-    haveError: boolean,
-    availableLanguages: string[],
-    defaultLanguage: string,
+    language: string,
     styles: StylesForLoginModalProps,
     urlToRegister?: string,
+    clientAppDomain: string,
+    apiKey: string,
 
 }
 class LoginModalElement extends HTMLElement {
@@ -31,15 +27,13 @@ class LoginModalElement extends HTMLElement {
     private props: Partial<LoginModalProps> = {};
     static get observedAttributes() {
         return [
-            "title",
             "visible",
-            "doing-login",
             "primary-color",
             "secondary-color",
-            "default-language",
-            "available-languages",
+            "language",
             "url-to-register",
-            "have-error"
+            "client-app-domain",
+            "api-key"
         ];
     }
     constructor() {
@@ -60,19 +54,15 @@ class LoginModalElement extends HTMLElement {
             this.root = ReactDOM.createRoot(this.mountPoint);
         }
         this.props = {
-            title: this.getAttribute("title") || "",
             visible: this.getAttribute("visible") === "true",
-            doingLogin: this.getAttribute("doing-login") === "true",
-            defaultLanguage: this.getAttribute("default-language") || "es",
+            language: this.getAttribute("language") || "es",
             styles: {
                 primaryColor: this.getAttribute("primary-color") || "#1890ff",
                 secondaryColor: this.getAttribute("secondary-color") || "#40a9ff"
             },
-            availableLanguages: this.parseAvailableLanguages(this.getAttribute("available-languages")),
             urlToRegister: this.getAttribute("url-to-register") || "",
-            haveError: this.getAttribute("have-error") === "true",
-            onLogin: (user, pass) => this.dispatchEvent(new CustomEvent("login", { detail: { user, pass } })),
-            onForgetPassword: () => this.dispatchEvent(new CustomEvent("forget-password"))
+            apiKey: this.getAttribute("api-key") || "",
+            clientAppDomain: this.getAttribute("client-app-domain") || ""
         };
 
         this.renderReactComponent();
@@ -81,14 +71,11 @@ class LoginModalElement extends HTMLElement {
         if (oldValue === newValue) return;
 
         switch (name) {
-            case "title":
-                this.props.title = newValue || "";
-                break;
             case "visible":
                 this.props.visible = newValue === "true";
                 break;
-            case "doing-login":
-                this.props.doingLogin = newValue === "true";
+            case "client-app-domain":
+                this.props.clientAppDomain = newValue || "";
                 break;
             case "primary-color":
             case "secondary-color":
@@ -97,18 +84,17 @@ class LoginModalElement extends HTMLElement {
                     [name === "primary-color" ? "primaryColor" : "secondaryColor"]: newValue || ""
                 };
                 break;
-            case "default-language":
-                this.props.defaultLanguage = newValue || "es";
+            case "language":
+                this.props.language = newValue || "es";
                 break;
-            case "available-languages":
-                this.props.availableLanguages = this.parseAvailableLanguages(newValue);
-                break;
+
             case "url-to-register":
                 this.props.urlToRegister = newValue || "";
                 break;
-            case "have-error":
-                this.props.haveError = newValue === "true";
+            case "api-key":
+                this.props.apiKey = newValue || "";
                 break;
+
         }
         this.updateColors({});
         this.renderReactComponent();
@@ -118,14 +104,7 @@ class LoginModalElement extends HTMLElement {
         this.updateColors(this.props.styles || {});
         this.renderReactComponent();
     }
-    private parseAvailableLanguages(value: string | null): string[] {
-        if (!value) return ["es"];
-        try {
-            return JSON.parse(value);
-        } catch {
-            return value.split(",").map(v => v.trim()).filter(Boolean);
-        }
-    }
+
     private updateColors = (styles: StylesForLoginModalProps) => {
         this.styleElement.textContent = `
     :root {
@@ -136,42 +115,68 @@ class LoginModalElement extends HTMLElement {
   `;
     };
     private setLanguage(lang: string) {
-        i18n.changeLanguage(lang).then(() => {
-            this.renderReactComponent();
-        });
+        return i18n.changeLanguage(lang);
     }
     private renderReactComponent() {
         if (!this.root) return;
 
-        this.setLanguage(this.props.defaultLanguage || "es");
-        this.root.render(<LoginModal {...(this.props as LoginModalProps)} />);
+        this.setLanguage(this.props.language || "es").then(() => {
+            this.root!.render(<LoginModal {...(this.props as LoginModalProps)} />);
+        });
+
     }
 }
 
 customElements.define("login-modal", LoginModalElement);
 
 export default function LoginModal({
-    title,
     visible,
-    onLogin,
-    onForgetPassword,
-    haveError,
-    defaultLanguage,
-    doingLogin,
+    language,
     urlToRegister,
-    availableLanguages }: LoginModalProps) {
+    clientAppDomain,
+    apiKey }: LoginModalProps) {
+
     const [form] = useForm();
-    const onFinish = (): void => {
-        onLogin(form.getFieldValue("username"), form.getFieldValue("password"));
-    }
+    const [doingLogin, setDoingLogin] = useState(false);
     const [visibleState, setVisibleState] = useState(visible);
-    const IsLaguagePresentInUrl = (): boolean => availableLanguages.some(language => window.location.pathname.split("/").length > 0 && window.location.pathname.split("/")[1] == language)
-    const GetLanguageInUrl = (): string => IsLaguagePresentInUrl() ? `/${window.location.pathname.split("/")[1]}` : '';
-    const GetDefaultLanguage = (): string => defaultLanguage;
-    const getFormattedUrl = (path: string): string => `${(IsLaguagePresentInUrl() ? GetLanguageInUrl() : GetDefaultLanguage())}/${path}`;
+    const [haveError, sethaveError] = useState(false);
+
     const { t } = useTranslation();
+
+    const IsLaguagePresentInUrl = (): boolean => window.location.pathname.split("/").length > 0 && window.location.pathname.split("/")[1] == language;
+    const GetLanguageInUrl = (): string => IsLaguagePresentInUrl() ? `/${window.location.pathname.split("/")[1]}` : '';
+    const getFormattedUrl = (path: string): string => `${(IsLaguagePresentInUrl() ? GetLanguageInUrl() : language)}/${path}`;
+
+    function onForgetPassword() {
+        alert("Forget password clicked");
+    }
+
+    const onFinish = (): void => {
+        const username = form.getFieldValue("username");
+        const password = form.getFieldValue("password");
+
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Access-Control-Allow-Origin', '*');
+        headers.append('Authority', clientAppDomain);
+
+        setDoingLogin(true);
+
+        fetch(`${window.location.origin}/api/login/${apiKey}?username=${username}&password=${password}`, { headers })
+            .then((res) => res.json())
+            .then((response) => {
+                // RECIBIMOS LA WEB CON UN TOKEN QUE GENERA EL BACKEND Y NOS DA ACCESO A LA APLICACIÓN
+                window.location.href = response.data
+            })
+            .catch(() => {
+                sethaveError(true);
+            })
+            .finally(() => { setDoingLogin(false) });
+
+    }
+    // #endregion 
     return (
-        <Modal onCancel={() => setVisibleState(false)} className="" title={title} open={visibleState} footer={null}>
+        <Modal onCancel={() => setVisibleState(false)} className="" title={t('title')} open={visibleState} footer={null}>
             <div className="login-form">
                 <Form form={form} onFinish={onFinish} layout="vertical">
                     <Form.Item
@@ -190,7 +195,7 @@ export default function LoginModal({
                         <Input.Password className="app-input" />
                     </Form.Item>
                     <div className="reminder-password-link">
-                        <span className="app-colored-main-font app-link" onClick={onForgetPassword}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
+                        <span className="app-colored-main-font app-link" onClick={() => onForgetPassword()}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
                     </div>
 
                     {
