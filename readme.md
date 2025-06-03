@@ -17,7 +17,7 @@
     api-key="asdadada-asdasd2-ada2-ds"
     > </login-modal>
 
-    <script src="../dist/login-modal.js"></script>
+    <script src="https://beds2b-group.github.io/login-modal/dist/login-modal.js"></script>
   </body>
 </html>
 ~~~
