@@ -1,5 +1,5 @@
 import { Button, Form, Input, Modal } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import css from "./login-modal.css"; // esto será un string
 import { useForm } from "antd/es/form/Form";
@@ -15,7 +15,6 @@ export interface LoginModalProps {
     title: string,
     visible: boolean,
     doingLogin: boolean,
-    onCancel: () => void,
     onLogin: (username: string, password: string) => void,
     onForgetPassword: () => void,
     haveError: boolean,
@@ -80,7 +79,6 @@ customElements.define("login-modal", LoginModalElement);
 export default function LoginModal({
     title,
     visible,
-    onCancel,
     onLogin,
     onForgetPassword,
     haveError,
@@ -92,13 +90,14 @@ export default function LoginModal({
     const onFinish = (): void => {
         onLogin(form.getFieldValue("username"), form.getFieldValue("password"));
     }
+    const [visibleState, setVisibleState] = useState(visible);
     const IsLaguagePresentInUrl = (): boolean => availableLanguages.some(language => window.location.pathname.split("/").length > 0 && window.location.pathname.split("/")[1] == language)
     const GetLanguageInUrl = (): string => IsLaguagePresentInUrl() ? `/${window.location.pathname.split("/")[1]}` : '';
     const GetDefaultLanguage = (): string => defaultLanguage;
     const getFormattedUrl = (path: string): string => `${(IsLaguagePresentInUrl() ? GetLanguageInUrl() : GetDefaultLanguage())}/${path}`;
     const { t } = useTranslation();
     return (
-        <Modal className="" title={title} open={visible} footer={null} onCancel={onCancel}>
+        <Modal onCancel={() => setVisibleState(false)} className="" title={title} open={visibleState} footer={null}>
             <div className="login-form">
                 <Form form={form} onFinish={onFinish} layout="vertical">
                     <Form.Item

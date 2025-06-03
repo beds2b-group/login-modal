@@ -3,7 +3,6 @@
   <head></head>
   <body>
     <login-modal id="modal"></login-modal>
-
     <script src="../dist/login-modal.js"></script>
     <script>
         customElements.whenDefined('login-modal').then(() => {
@@ -18,9 +17,8 @@
                     primaryColor:"red",
                     secondaryColor:"black"}, 
                 title: "Hola Mundo",
-                onCancel: () => alert("cerrado"),
-                onLogin: (username, password) => alert("cerrado"),
-                onForgetPassword: () => alert("cerrado"),
+                onLogin: (username, password) => alert("logining"),
+                onForgetPassword: () => alert("forget password"),
                 availableLanguages:["es","en"],
                 defaultLanguage: "es",
                 urlToRegister:"",
