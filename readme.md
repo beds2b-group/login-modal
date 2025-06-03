@@ -1,17 +1,25 @@
 ## Login modal web component
 
-Usamos este repositorio para buildear y exportar el dist/login-modal-atributes.js para usarlo como componente en cualquier lugar que use js.
+- LENGUAJES DISPONIBLES:  es, en, fr, pt, us
 
-Para crear el nuevo fichero tan solo ejecutamos `` npm run build `` y se creará un fichero en dist/login-modal-atributes.js
+~~~
+<html>
+  <head></head>
+  <body>
 
-También podemos usar el archivo dist/login-modal para hacer los cambios directamente en el script, a cuestión de gustos. 
+    <login-modal 
+    visible="true" 
+    language="en" 
+    secondary-color="#F0F0F0" 
+    primary-color="#1D7CE3"   
+    url-to-register="/registro"
+    client-app-domain="senator.beds2pro.com"
+    api-key="asdadada-asdasd2-ada2-ds"
+    > </login-modal>
 
-Este fichero lo copiamos y pegamos en la carpeta que queramos y la llamamos en el html como: 
+    <script src="../dist/login-modal.js"></script>
+  </body>
+</html>
+~~~
 
-- `` <script src="../dist/login-modal.js"></script>``
-
-Una vez iniciado en el body de nuestro html el script, lo iniciamos 
-1. `` <login-modal id="modal"> </login-modal>`` . id para identificarlo después.
-2. Revisa el src/index.html para ver cómo funciona y que parámetros necesita, está ejemplificadas ambas versiones.
-
-LENGUAJES DISPONIBLES:  es, en, fr, pt, us
+Si queremos generar un nuevo archivo, tan solo tienes que actualizar lo que quieras y hacer ```npm run build```. Esto generará el nuevo archivo minificado y actualizado. Una vez terminada la build (que es rápida), subimos a la rama master y se actualizará automáticamente la url, ya que, usamos github pages.
