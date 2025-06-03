@@ -2,7 +2,7 @@ import esbuild from "esbuild";
 
 esbuild.build({
   entryPoints: ["src/login-modal.tsx"], // o login-modal.tsx
-  outfile: "dist/login-modal.js",
+  outfile: "dist/login-modal-atributes.js",
   bundle: true,
   minify: true,
   loader: {

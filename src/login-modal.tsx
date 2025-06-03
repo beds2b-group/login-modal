@@ -29,7 +29,19 @@ class LoginModalElement extends HTMLElement {
     private root: ReactDOM.Root | null = null;
     private styleElement: HTMLStyleElement;
     private props: Partial<LoginModalProps> = {};
-
+    static get observedAttributes() {
+        return [
+            "title",
+            "visible",
+            "doing-login",
+            "primary-color",
+            "secondary-color",
+            "default-language",
+            "available-languages",
+            "url-to-register",
+            "have-error"
+        ];
+    }
     constructor() {
         super();
         this.mountPoint = document.createElement("div");
@@ -51,13 +63,72 @@ class LoginModalElement extends HTMLElement {
         if (!this.root) {
             this.root = ReactDOM.createRoot(this.mountPoint);
         }
+        this.props = {
+            title: this.getAttribute("title") || "",
+            visible: this.getAttribute("visible") === "true",
+            doingLogin: this.getAttribute("doing-login") === "true",
+            defaultLanguage: this.getAttribute("default-language") || "es",
+            styles: {
+                primaryColor: this.getAttribute("primary-color") || "#1890ff",
+                secondaryColor: this.getAttribute("secondary-color") || "#40a9ff"
+            },
+            availableLanguages: this.parseAvailableLanguages(this.getAttribute("available-languages")),
+            urlToRegister: this.getAttribute("url-to-register") || "",
+            haveError: this.getAttribute("have-error") === "true",
+            onLogin: (user, pass) => this.dispatchEvent(new CustomEvent("login", { detail: { user, pass } })),
+            onForgetPassword: () => this.dispatchEvent(new CustomEvent("forget-password"))
+        };
+
         this.renderReactComponent();
     }
+    attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+        if (oldValue === newValue) return;
 
+        switch (name) {
+            case "title":
+                this.props.title = newValue || "";
+                break;
+            case "visible":
+                this.props.visible = newValue === "true";
+                break;
+            case "doing-login":
+                this.props.doingLogin = newValue === "true";
+                break;
+            case "primary-color":
+            case "secondary-color":
+                this.props.styles = {
+                    ...this.props.styles,
+                    [name === "primary-color" ? "primaryColor" : "secondaryColor"]: newValue || ""
+                };
+                break;
+            case "default-language":
+                this.props.defaultLanguage = newValue || "es";
+                break;
+            case "available-languages":
+                this.props.availableLanguages = this.parseAvailableLanguages(newValue);
+                break;
+            case "url-to-register":
+                this.props.urlToRegister = newValue || "";
+                break;
+            case "have-error":
+                this.props.haveError = newValue === "true";
+                break;
+        }
+        this.updateColors({});
+        this.renderReactComponent();
+    }
     setProps(newProps: Partial<LoginModalProps>) {
         this.props = { ...this.props, ...newProps };
         this.updateColors(this.props.styles || {});
         this.renderReactComponent();
+    }
+    private parseAvailableLanguages(value: string | null): string[] {
+        if (!value) return ["es"];
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value.split(",").map(v => v.trim()).filter(Boolean);
+        }
     }
     private updateColors = (styles: StylesForLoginModalProps) => {
         this.styleElement.textContent = `

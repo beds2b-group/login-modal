@@ -2,47 +2,61 @@
 <html>
   <head></head>
   <body>
-    <login-modal id="modal"></login-modal>
+
+    <login-modal 
+
+    visible="true" 
+    availableLanguages="['es','en']" 
+    doingLogin="false"  
+    default-language="es" 
+    secondary-color="#F0F0F0" 
+    primary-color="#1D7CE3"   
+    id="modal"
+    title="Hola Mundo"
+    urlToRegister=""
+    />
+
     <script src="../dist/login-modal.js"></script>
     <script>
-        customElements.whenDefined('login-modal').then(() => {
-             const modal = document.getElementById("modal");
-             if (modal && typeof modal.setProps === "function") {
-                modal.setLanguage("es");
-                modal.setProps(
-                { 
-                visible: true,
-                doingLogin:false, 
-                styles:{
-                    primaryColor:"red",
-                    secondaryColor:"black"}, 
-                title: "Hola Mundo",
-                onLogin: (username, password) => alert("logining"),
-                onForgetPassword: () => alert("forget password"),
-                availableLanguages:["es","en"],
-                defaultLanguage: "es",
-                urlToRegister:"",
-                haveError: false,
-                })
-            }else {
-                console.error("modal.setProps no está disponible");
-            }
-            setTimeout(() => {
-                modal.setProps({ doingLogin:true, })
-                 modal.setLanguage("en");
-            }, 1000);
+        // dist login-modal.js EXAMPLE
+        //         customElements.whenDefined('login-modal').then(() => {
+        //              const modal = document.getElementById("modal");
+        //              if (modal && typeof modal.setProps === "function") {
+        //                 modal.setLanguage("es");
+        //                 modal.setProps(
+        //                 { 
+        //                 visible: true,
+        //                 doingLogin:false, 
+        //                 styles:{
+        //                     primaryColor:"red",
+        //                     secondaryColor:"black"}, 
+        //                 title: "Hola Mundo",
+        //                 onLogin: (username, password) => alert("logining"),
+        //                 onForgetPassword: () => alert("forget password"),
+        //                 availableLanguages:["es","en"],
+        //                 defaultLanguage: "es",
+        //                 urlToRegister:"",
+        //                 haveError: false,
+        //                 })
+        //             }else {
+        //                 console.error("modal.setProps no está disponible");
+        //             }
+        //             setTimeout(() => {
+        //                 modal.setProps({ doingLogin:true, })
+        //                  modal.setLanguage("en");
+        //             }, 1000);
+                    
+        //             setTimeout(() => {
+        //                 modal.setProps({ doingLogin:false, })
+        //                  modal.setLanguage("es");
+        //             }, 5000);
+        //              setTimeout(() => {
+        //                 modal.setProps({ visible:false, })
+                        
+        //             }, 3000);
+        //         }
             
-            setTimeout(() => {
-                modal.setProps({ doingLogin:false, })
-                 modal.setLanguage("es");
-            }, 5000);
-             setTimeout(() => {
-                modal.setProps({ visible:false, })
-                 
-            }, 3000);
-        }
-       
-);
+        // );
     </script>
   </body>
 </html>
