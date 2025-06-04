@@ -8,6 +8,12 @@ i18n
       en: {
         translation: {
           title: "Login",
+          "forget-password-email-sent-title": "Email Sent",
+          "forget-password-modal-title": "Forgot Password",
+          "forget-password-form.email": "Email",
+          "validations.required-field": "This field is required",
+          "forget-password-form.cancel": "Cancel",
+          "forget-password-form.submit": "Submit",
           usernamePlaceholder: "Username",
           passwordPlaceholder: "Password",
           requiredFieldError: "This field is required",
@@ -15,10 +21,18 @@ i18n
           formErrorMessage: "There was an error with your login. Please try again.",
           accessTextButton: "Access",
           notRegisterText: "I'm not registered",
+          "forget-password-email-sent-description": "An email has been sent to <strong>{{email}}</strong> with instructions to recover your password.",
         },
       },
       es: {
         translation: {
+          "forget-password-email-sent-title": "Correo electrónico enviado",
+          "forget-password-email-sent-description": "Se ha enviado un email a la dirección <strong>{{email}}</strong> con las instrucciones para recuperar la contraseña.",
+          "forget-password-modal-title": "Olvidé mi contraseña",
+          "forget-password-form.email": "Correo electrónico",
+          "forget-password-form.cancel": "Cancelar",
+          "validations.required-field": "Este campo es obligatorio",
+          "forget-password-form.submit": "Enviar",
           title: "Iniciar sesión",
           usernamePlaceholder: "Usuario",
           passwordPlaceholder: "Contraseña",
@@ -32,6 +46,13 @@ i18n
       pt:{
         translation: {
           title: "Login",
+          "forget-password-email-sent-title": "E-mail enviado",
+          "forget-password-email-sent-description": "Um e-mail foi enviado para <strong>{{email}}</strong> com instruções para recuperar sua senha.",
+          "forget-password-modal-title": "Esqueci minha senha",
+          "validations.required-field": "Este campo é obrigatório",
+          "forget-password-form.email": "E-mail",
+          "forget-password-form.cancel": "Cancelar",
+          "forget-password-form.submit": "Enviar",
           usernamePlaceholder: "Usuário",
           passwordPlaceholder: "Senha",
           requiredFieldError: "Este campo é obrigatório",
@@ -44,6 +65,13 @@ i18n
       fr:{
         translation: {
           title: "Connexion",
+          "forget-password-email-sent-title": "E-mail envoyé",
+          "forget-password-email-sent-description": "Un e-mail a été envoyé à <strong>{{email}}</strong> avec des instructions pour récupérer votre mot de passe.",
+          "forget-password-modal-title": "Mot de passe oublié",
+          "validations.required-field": "Ce champ est obligatoire",
+          "forget-password-form.email": "E-mail",
+          "forget-password-form.cancel": "Annuler",
+          "forget-password-form.submit": "Envoyer",
           usernamePlaceholder: "Nom d'utilisateur",
           passwordPlaceholder: "Mot de passe",
           requiredFieldError: "Ce champ est obligatoire",
@@ -56,6 +84,13 @@ i18n
       us:{
         translation: {
           title: "Login",
+          "forget-password-email-sent-title": "Email Sent",
+          "forget-password-email-sent-description": "An email has been sent to <strong>{{email}}</strong> with instructions to recover your password.",
+          "forget-password-modal-title": "Forgot Password",
+          "forget-password-form.email": "Email",
+          "validations.required-field": "This field is required",
+          "forget-password-form.cancel": "Cancel",
+          "forget-password-form.submit": "Submit",
           usernamePlaceholder: "Username",
           passwordPlaceholder: "Password",
           requiredFieldError: "This field is required",

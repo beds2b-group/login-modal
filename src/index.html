@@ -14,6 +14,13 @@
     > </login-modal>
 
     <script src="../dist/login-modal.js"></script>
+    <script>
+      // si queremos mostrar notificaciones desde el componente
+      window.addEventListener("show-notification", (e) => {
+    const { type, message, description } = e.detail;
+    notification[type]?.({ message, description }); // Desde Ant Design en el host
+    });
+    </script>
   </body>
 </html>
 

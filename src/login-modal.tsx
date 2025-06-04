@@ -1,5 +1,5 @@
 import { Button, Form, Input, Modal } from "antd";
-import { useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import ReactDOM from "react-dom/client";
 import css from "./login-modal.css"; // esto será un string
 import { useForm } from "antd/es/form/Form";
@@ -137,32 +137,40 @@ export default function LoginModal({
     apiKey }: LoginModalProps) {
 
     const [form] = useForm();
+    const [formForgetPassword] = useForm();
     const [doingLogin, setDoingLogin] = useState(false);
+    const [loadingForgetPassword, setLoadingForgetPassword] = useState(false);
     const [visibleState, setVisibleState] = useState(visible);
     const [haveError, sethaveError] = useState(false);
-
+    const [showForgetPassword, setShowForgetPassword] = useState(false);
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Access-Control-Allow-Origin', '*');
+    headers.append('Authority', clientAppDomain);
     const { t } = useTranslation();
 
     const IsLaguagePresentInUrl = (): boolean => window.location.pathname.split("/").length > 0 && window.location.pathname.split("/")[1] == language;
     const GetLanguageInUrl = (): string => IsLaguagePresentInUrl() ? `/${window.location.pathname.split("/")[1]}` : '';
     const getFormattedUrl = (path: string): string => `${(IsLaguagePresentInUrl() ? GetLanguageInUrl() : language)}/${path}`;
 
-    function onForgetPassword() {
-        alert("Forget password clicked");
-    }
 
+    const showHostNotification = (type: string, message: string, description: string | ReactNode) => {
+        const event = new CustomEvent("show-notification", {
+            detail: { type, message, description },
+            bubbles: true,
+            composed: true
+        });
+        window.dispatchEvent(event);
+    };
     const onFinish = (): void => {
         const username = form.getFieldValue("username");
         const password = form.getFieldValue("password");
 
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Access-Control-Allow-Origin', '*');
-        headers.append('Authority', clientAppDomain);
+
 
         setDoingLogin(true);
 
-        fetch(`${window.location.origin}/api/login/${apiKey}?username=${username}&password=${password}`, { headers })
+        fetch(`${window.location.origin}/api/v1/login/${apiKey}?username=${username}&password=${password}`, { headers })
             .then((res) => res.json())
             .then((response) => {
                 // RECIBIMOS LA WEB CON UN TOKEN QUE GENERA EL BACKEND Y NOS DA ACCESO A LA APLICACIÓN
@@ -174,50 +182,121 @@ export default function LoginModal({
             .finally(() => { setDoingLogin(false) });
 
     }
+    const onCancelPush = (): void => {
+        form.resetFields();
+        setShowForgetPassword(false);
+    }
+    const onFinishFormForgetPassword = () => {
+        setLoadingForgetPassword(true);
+        try {
+            const email: string = formForgetPassword.getFieldValue("email");
+            const body = {
+                email: email,
+                app: "wa"
+            }
+
+            fetch(`${window.location.origin}/api/v1/Users/RecoverPassword`, { headers, body: JSON.stringify(body), method: "POST" })
+                .then(response => {
+                    if (!response.ok) {
+                        showHostNotification("error", t("forget-password-error-title"), t("forget-password-error-description"));
+                    }
+                    return response.json();
+                }).then((r) => {
+                    if (r && r.typeText === "success") {
+                        showHostNotification("success", t("forget-password-email-sent-title"), HTMLReactParser(t("forget-password-email-sent-description", { email })));
+
+                        setShowForgetPassword(false);
+                    }
+                }).catch((error) => {
+                    console.error('Error sending recovery email:', error);
+                    showHostNotification("error", t("forget-password-error-title"), t("forget-password-error-description"));
+                })
+                .finally(() => {
+                    setLoadingForgetPassword(false);
+                    formForgetPassword.resetFields();
+                })
+
+
+
+        } catch (error) {
+            console.error('Error recovering password :', error);
+            return null;
+        }
+
+    }
+
     // #endregion 
     return (
-        <Modal onCancel={() => setVisibleState(false)} className="" title={t('title')} open={visibleState} footer={null}>
-            <div className="login-form">
-                <Form form={form} onFinish={onFinish} layout="vertical">
-                    <Form.Item
-                        label={t("usernamePlaceholder") || "Username"}
-                        name="username"
-                        rules={[{ required: true, message: t("requiredFieldError") || "Error" }]}
-                    >
-                        <Input className="app-input" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label={t("passwordPlaceholder") || "Password"}
-                        name="password"
-                        rules={[{ required: true, message: t("requiredFieldError") || "Error" }]}
-                    >
-                        <Input.Password className="app-input" />
-                    </Form.Item>
-                    <div className="reminder-password-link">
-                        <span className="app-colored-main-font app-link" onClick={() => onForgetPassword()}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
-                    </div>
-
-                    {
-                        haveError ?
-                            <div className="error-message">
-                                {t("formErrorMessage") || "There was an error with your login. Please try again."}
-                            </div>
-                            :
-                            ''
-                    }
-
-                    <Button size="large" className="app-button btn-submit" htmlType="submit">
-                        {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
-                    </Button>
-
-
-
-                </Form>
-                <div className="not-register">
-                    <a className="app-colored-main-font app-link" href={`${urlToRegister ?? getFormattedUrl('register')}`}>{t("notRegisterText") || "I'm not registered"}</a>
+        <>
+            <Modal className="app-modal" title={t("forget-password-modal-title")} open={showForgetPassword} footer={null} onCancel={() => setShowForgetPassword(false)}>
+                <div className="forget-password-form">
+                    <Form form={formForgetPassword} onFinish={onFinishFormForgetPassword} layout="horizontal">
+                        <Form.Item
+                            label={t("forget-password-form.email")}
+                            name="email"
+                            rules={[{ required: true, message: t("validations.required-field")! }]}
+                        >
+                            <Input className="app-input" type="email" />
+                        </Form.Item>
+                        <div className="actions">
+                            <Button style={{ borderRadius: "2px" }} type="default" key="back" onClick={onCancelPush}>
+                                {t("forget-password-form.cancel")}
+                            </Button>
+                            <Button disabled={loadingForgetPassword} className="app-button" key="submit" htmlType="submit" type="primary" loading={loadingForgetPassword}>
+                                {t("forget-password-form.submit")}
+                            </Button>
+                        </div>
+                    </Form>
                 </div>
-            </div>
-        </Modal>
+            </Modal>
+            <Modal onCancel={() => setVisibleState(false)} className="" title={t('title')} open={visibleState} footer={null}>
+                <div className="login-form">
+                    <Form form={form} onFinish={onFinish} layout="vertical">
+                        <Form.Item
+                            label={t("usernamePlaceholder") || "Username"}
+                            name="username"
+                            rules={[{ required: true, message: t("requiredFieldError") || "Error" }]}
+                        >
+                            <Input className="app-input" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label={t("passwordPlaceholder") || "Password"}
+                            name="password"
+                            rules={[{ required: true, message: t("requiredFieldError") || "Error" }]}
+                        >
+                            <Input.Password className="app-input" />
+                        </Form.Item>
+                        <div className="reminder-password-link">
+                            <span className="app-colored-main-font app-link" onClick={() => setShowForgetPassword(true)}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
+                        </div>
+
+                        {
+                            haveError ?
+                                <div className="error-message">
+                                    {t("formErrorMessage") || "There was an error with your login. Please try again."}
+                                </div>
+                                :
+                                ''
+                        }
+
+                        <Button size="large" className="app-button btn-submit" htmlType="submit">
+                            {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
+                        </Button>
+
+
+
+                    </Form>
+                    <div className="not-register">
+                        <a className="app-colored-main-font app-link" href={`${urlToRegister ?? getFormattedUrl('register')}`}>{t("notRegisterText") || "I'm not registered"}</a>
+                    </div>
+                </div>
+            </Modal>
+        </>
+
     );
+}
+
+function HTMLReactParser(arg0: string): import("react").ReactNode {
+    throw new Error("Function not implemented.");
 }

@@ -18,6 +18,15 @@
     > </login-modal>
 
     <script src="https://beds2b-group.github.io/login-modal/dist/login-modal.js"></script>
+     <script>
+
+      // Si queremos mostrar notificaciones desde el componente creamos el evento y lo pasamos a las notificaciones que usamos en nuestra app.
+      window.addEventListener("show-notification", (e) => {
+        const { type, message, description } = e.detail;
+        notification[type]?.({ message, description }); //ejemplo con antDesign
+      });
+      
+    </script>
   </body>
 </html>
 ~~~
