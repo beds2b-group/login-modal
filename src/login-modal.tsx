@@ -6,11 +6,13 @@ import { useForm } from "antd/es/form/Form";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
+import { StyleProvider } from '@ant-design/cssinjs';
 
 export interface StylesForLoginModalProps {
     primaryColor?: string,
     secondaryColor?: string,
 }
+export type TypeLoginModalProps = "default" | "modal";
 export interface LoginModalProps {
     visible: boolean,
     language: string,
@@ -18,6 +20,7 @@ export interface LoginModalProps {
     urlToRegister?: string,
     clientAppDomain: string,
     apiKey: string,
+    mode?: TypeLoginModalProps
 
 }
 class LoginModalElement extends HTMLElement {
@@ -33,7 +36,8 @@ class LoginModalElement extends HTMLElement {
             "language",
             "url-to-register",
             "client-app-domain",
-            "api-key"
+            "api-key",
+            "mode"
         ];
     }
     constructor() {
@@ -45,7 +49,9 @@ class LoginModalElement extends HTMLElement {
         this.styleElement = document.createElement("style");
         this.styleElement.textContent = css;
         document.head.appendChild(this.styleElement);
+
         shadow.appendChild(this.mountPoint);
+
         this.updateColors({});
     }
 
@@ -62,9 +68,12 @@ class LoginModalElement extends HTMLElement {
             },
             urlToRegister: this.getAttribute("url-to-register") || "",
             apiKey: this.getAttribute("api-key") || "",
-            clientAppDomain: this.getAttribute("client-app-domain") || ""
+            clientAppDomain: this.getAttribute("client-app-domain") || "",
+            mode: this.getAttribute("mode") as TypeLoginModalProps || "default"
         };
-
+        if (this.props.mode === "default" && !this.shadowRoot!.contains(this.styleElement)) {
+            this.shadowRoot!.appendChild(this.styleElement);
+        }
         this.renderReactComponent();
     }
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
@@ -94,6 +103,9 @@ class LoginModalElement extends HTMLElement {
             case "api-key":
                 this.props.apiKey = newValue || "";
                 break;
+            case "mode":
+                this.props.mode = newValue as TypeLoginModalProps || "default";
+                break;
 
         }
         this.updateColors({});
@@ -107,7 +119,7 @@ class LoginModalElement extends HTMLElement {
 
     private updateColors = (styles: StylesForLoginModalProps) => {
         this.styleElement.textContent = `
-    :root {
+    :${this.props.mode === "modal" ? "root" : "host"} {
       --primary-client-color-login-modal: ${styles.primaryColor || '#1890ff'};
       --secondary-client-color-login-modal: ${styles.secondaryColor || '#40a9ff'};
     }
@@ -121,7 +133,14 @@ class LoginModalElement extends HTMLElement {
         if (!this.root) return;
 
         this.setLanguage(this.props.language || "es").then(() => {
-            this.root!.render(<LoginModal {...(this.props as LoginModalProps)} />);
+            this.root!.render(
+                this.props.mode === "modal" ? <LoginModal {...(this.props as LoginModalProps)} />
+                    : <StyleProvider container={this.shadowRoot!}>
+                        <LoginModal {...(this.props as LoginModalProps)} />
+                    </StyleProvider>
+
+
+            );
         });
 
     }
@@ -134,7 +153,8 @@ export default function LoginModal({
     language,
     urlToRegister,
     clientAppDomain,
-    apiKey }: LoginModalProps) {
+    apiKey,
+    mode }: LoginModalProps) {
 
     const [form] = useForm();
     const [formForgetPassword] = useForm();
@@ -227,29 +247,29 @@ export default function LoginModal({
 
     // #endregion 
     return (
-        <>
-            <Modal className="app-modal" title={t("forget-password-modal-title")} open={showForgetPassword} footer={null} onCancel={() => setShowForgetPassword(false)}>
-                <div className="forget-password-form">
-                    <Form form={formForgetPassword} onFinish={onFinishFormForgetPassword} layout="horizontal">
-                        <Form.Item
-                            label={t("forget-password-form.email")}
-                            name="email"
-                            rules={[{ required: true, message: t("validations.required-field")! }]}
-                        >
-                            <Input className="app-input" type="email" />
-                        </Form.Item>
-                        <div className="actions">
-                            <Button style={{ borderRadius: "2px" }} type="default" key="back" onClick={onCancelPush}>
-                                {t("forget-password-form.cancel")}
-                            </Button>
-                            <Button disabled={loadingForgetPassword} className="app-button" key="submit" htmlType="submit" type="primary" loading={loadingForgetPassword}>
-                                {t("forget-password-form.submit")}
-                            </Button>
-                        </div>
-                    </Form>
-                </div>
-            </Modal>
-            <Modal onCancel={() => setVisibleState(false)} className="" title={t('title')} open={visibleState} footer={null}>
+        mode === "default" ?
+            <>
+                <Modal className="app-modal" title={t("forget-password-modal-title")} open={showForgetPassword} footer={null} onCancel={() => setShowForgetPassword(false)}>
+                    <div className="forget-password-form">
+                        <Form form={formForgetPassword} onFinish={onFinishFormForgetPassword} layout="horizontal">
+                            <Form.Item
+                                label={t("forget-password-form.email")}
+                                name="email"
+                                rules={[{ required: true, message: t("validations.required-field")! }]}
+                            >
+                                <Input className="app-input" type="email" />
+                            </Form.Item>
+                            <div className="actions">
+                                <Button style={{ borderRadius: "2px" }} type="default" key="back" onClick={onCancelPush}>
+                                    {t("forget-password-form.cancel")}
+                                </Button>
+                                <Button disabled={loadingForgetPassword} className="app-button" key="submit" htmlType="submit" type="primary" loading={loadingForgetPassword}>
+                                    {t("forget-password-form.submit")}
+                                </Button>
+                            </div>
+                        </Form>
+                    </div>
+                </Modal>
                 <div className="login-form">
                     <Form form={form} onFinish={onFinish} layout="vertical">
                         <Form.Item
@@ -271,14 +291,12 @@ export default function LoginModal({
                             <span className="app-colored-main-font app-link" onClick={() => setShowForgetPassword(true)}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
                         </div>
 
-                        {
-                            haveError ?
-                                <div className="error-message">
-                                    {t("formErrorMessage") || "There was an error with your login. Please try again."}
-                                </div>
-                                :
-                                ''
-                        }
+                        {haveError ?
+                            <div className="error-message">
+                                {t("formErrorMessage") || "There was an error with your login. Please try again."}
+                            </div>
+                            :
+                            ''}
 
                         <Button size="large" className="app-button btn-submit" htmlType="submit">
                             {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
@@ -291,10 +309,73 @@ export default function LoginModal({
                         <a className="app-colored-main-font app-link" href={`${urlToRegister ?? getFormattedUrl('register')}`}>{t("notRegisterText") || "I'm not registered"}</a>
                     </div>
                 </div>
-            </Modal>
-        </>
+            </>
+            :
+            <>
+                <Modal className="app-modal" title={t("forget-password-modal-title")} open={showForgetPassword} footer={null} onCancel={() => setShowForgetPassword(false)}>
+                    <div className="forget-password-form">
+                        <Form form={formForgetPassword} onFinish={onFinishFormForgetPassword} layout="horizontal">
+                            <Form.Item
+                                label={t("forget-password-form.email")}
+                                name="email"
+                                rules={[{ required: true, message: t("validations.required-field")! }]}
+                            >
+                                <Input className="app-input" type="email" />
+                            </Form.Item>
+                            <div className="actions">
+                                <Button style={{ borderRadius: "2px" }} type="default" key="back" onClick={onCancelPush}>
+                                    {t("forget-password-form.cancel")}
+                                </Button>
+                                <Button disabled={loadingForgetPassword} className="app-button" key="submit" htmlType="submit" type="primary" loading={loadingForgetPassword}>
+                                    {t("forget-password-form.submit")}
+                                </Button>
+                            </div>
+                        </Form>
+                    </div>
+                </Modal><Modal onCancel={() => setVisibleState(false)} className="" title={t('title')} open={visibleState} footer={null}>
+                    <div className="login-form">
+                        <Form form={form} onFinish={onFinish} layout="vertical">
+                            <Form.Item
+                                label={t("usernamePlaceholder") || "Username"}
+                                name="username"
+                                rules={[{ required: true, message: t("requiredFieldError") || "Error" }]}
+                            >
+                                <Input className="app-input" />
+                            </Form.Item>
 
-    );
+                            <Form.Item
+                                label={t("passwordPlaceholder") || "Password"}
+                                name="password"
+                                rules={[{ required: true, message: t("requiredFieldError") || "Error" }]}
+                            >
+                                <Input.Password className="app-input" />
+                            </Form.Item>
+                            <div className="reminder-password-link">
+                                <span className="app-colored-main-font app-link" onClick={() => setShowForgetPassword(true)}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
+                            </div>
+
+                            {haveError ?
+                                <div className="error-message">
+                                    {t("formErrorMessage") || "There was an error with your login. Please try again."}
+                                </div>
+                                :
+                                ''}
+
+                            <Button size="large" className="app-button btn-submit" htmlType="submit">
+                                {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
+                            </Button>
+
+
+
+                        </Form>
+                        <div className="not-register">
+                            <a className="app-colored-main-font app-link" href={`${urlToRegister ?? getFormattedUrl('register')}`}>{t("notRegisterText") || "I'm not registered"}</a>
+                        </div>
+                    </div>
+                </Modal>
+            </>
+
+    )
 }
 
 function HTMLReactParser(arg0: string): import("react").ReactNode {

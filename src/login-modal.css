@@ -1,4 +1,3 @@
-
 .app-colored-main-font {
   color: var(--primary-client-color-login-modal);
 }
@@ -14,35 +13,17 @@
 
 .app-button {
   border-radius: 2px !important;
-  background: var(--primary-client-color-login-modal);
-  border-color: var(--primary-client-color-login-modal);
-  color: white;
+  background: var(--primary-client-color-login-modal) !important;
+  border-color: var(--primary-client-color-login-modal) !important;
+  color: white !important;
 }
 .app-button:hover {
-  transition: all 0.5s;
+  transition: all 0.5s !important;
   background-color: var(--secondary-client-color-login-modal) !important;
   color: white !important;
   border-color: var(--secondary-client-color-login-modal) !important;
 }
-.app-button.danger {
-  background: white;
-  color: red;
-  border-color: red;
-}
-.app-button.danger:hover {
-  color: red !important;
-  border-color: red !important;
-}
-.app-button.blue-button {
-  background: #1D7CE3;
-  border-color: #1D7CE3;
-  color: white;
-}
-.app-button.blue-button:hover {
-  background: #1D7CE3;
-  color: white !important;
-  border-color: #1D7CE3 !important;
-}
+
 .app-button.app-cart-button {
   width: 90%;
   margin-bottom: 10px;
@@ -110,11 +91,11 @@
   border: none !important;
 }
 .login-form .not-register {
-  width: 100%;
-  text-align: center;
+  width: 100% !important;
+  text-align: center !important;
 }
 .login-form .not-register a {
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 .app-modal {
