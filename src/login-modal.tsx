@@ -13,6 +13,7 @@ export interface StylesForLoginModalProps {
     secondaryColor?: string,
 }
 export type TypeLoginModalProps = "default" | "modal";
+export type EnvProps = "dev" | "pro";
 export interface LoginModalProps {
     visible: boolean,
     language: string,
@@ -20,7 +21,8 @@ export interface LoginModalProps {
     urlToRegister?: string,
     clientAppDomain: string,
     apiKey: string,
-    mode?: TypeLoginModalProps
+    mode?: TypeLoginModalProps,
+    env: EnvProps
 
 }
 class LoginModalElement extends HTMLElement {
@@ -69,7 +71,8 @@ class LoginModalElement extends HTMLElement {
             urlToRegister: this.getAttribute("url-to-register") || "",
             apiKey: this.getAttribute("api-key") || "",
             clientAppDomain: this.getAttribute("client-app-domain") || "",
-            mode: this.getAttribute("mode") as TypeLoginModalProps || "default"
+            mode: this.getAttribute("mode") as TypeLoginModalProps || "default",
+            env: this.getAttribute("env") as EnvProps || "pro"
         };
         if (this.props.mode === "default" && !this.shadowRoot!.contains(this.styleElement)) {
             this.shadowRoot!.appendChild(this.styleElement);
@@ -105,6 +108,9 @@ class LoginModalElement extends HTMLElement {
                 break;
             case "mode":
                 this.props.mode = newValue as TypeLoginModalProps || "default";
+                break;
+            case "env":
+                this.props.env = newValue as EnvProps || "pro";
                 break;
 
         }
@@ -154,7 +160,11 @@ export default function LoginModal({
     urlToRegister,
     clientAppDomain,
     apiKey,
-    mode }: LoginModalProps) {
+    mode,
+    env
+    }: LoginModalProps) {
+
+    const apiUrlBase = env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es";
 
     const [form] = useForm();
     const [formForgetPassword] = useForm();
@@ -167,6 +177,7 @@ export default function LoginModal({
     headers.append('Content-Type', 'application/json');
     headers.append('Access-Control-Allow-Origin', '*');
     headers.append('Authority', clientAppDomain);
+    headers.append('X-Api-Key', apiKey);
     const { t } = useTranslation();
 
     const IsLaguagePresentInUrl = (): boolean => window.location.pathname.split("/").length > 0 && window.location.pathname.split("/")[1] == language;
@@ -186,14 +197,11 @@ export default function LoginModal({
         const username = form.getFieldValue("username");
         const password = form.getFieldValue("password");
 
-
-
         setDoingLogin(true);
 
-        fetch(`${window.location.origin}/api/v1/login/${apiKey}?username=${username}&password=${password}`, { headers })
+        fetch(`https://${apiUrlBase}/api/v1/Users/widgetlogin/${apiKey}?username=${username}&password=${password}`, { headers })
             .then((res) => res.json())
             .then((response) => {
-                // RECIBIMOS LA WEB CON UN TOKEN QUE GENERA EL BACKEND Y NOS DA ACCESO A LA APLICACIÓN
                 window.location.href = response.data
             })
             .catch(() => {
@@ -215,7 +223,7 @@ export default function LoginModal({
                 app: "wa"
             }
 
-            fetch(`${window.location.origin}/api/v1/Users/RecoverPassword`, { headers, body: JSON.stringify(body), method: "POST" })
+            fetch(`https://${apiUrlBase}/api/v1/Users/RecoverPassword`, { headers, body: JSON.stringify(body), method: "POST" })
                 .then(response => {
                     if (!response.ok) {
                         showHostNotification("error", t("forget-password-error-title"), t("forget-password-error-description"));
