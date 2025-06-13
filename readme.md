@@ -8,13 +8,15 @@
   <body>
 
     <login-modal 
-    visible="true" 
-    language="en" 
-    secondary-color="#F0F0F0" 
-    primary-color="#1D7CE3"   
-    url-to-register="/registro"
-    client-app-domain="senator.beds2pro.com"
-    api-key="asdadada-asdasd2-ada2-ds"
+      env="dev"
+      visible="true" 
+      language="en" 
+      secondary-color="#F0F0F0" 
+      primary-color="#1D7CE3"   
+      url-to-register="/registro"
+      client-app-domain="hotelbrand.beds2bpro.es"
+      api-key="<your api key>"
+      mode ="modal"
     > </login-modal>
 
     <script src="https://beds2b-group.github.io/login-modal/dist/login-modal.js"></script>
