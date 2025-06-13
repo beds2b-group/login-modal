@@ -174,10 +174,9 @@ export default function LoginModal({
     const [haveError, sethaveError] = useState(false);
     const [showForgetPassword, setShowForgetPassword] = useState(false);
     const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
     headers.append('Access-Control-Allow-Origin', '*');
+    headers.append('Host', apiUrlBase);
     headers.append('Authority', clientAppDomain);
-    headers.append('X-Api-Key', apiKey);
     const { t } = useTranslation();
 
     const IsLaguagePresentInUrl = (): boolean => window.location.pathname.split("/").length > 0 && window.location.pathname.split("/")[1] == language;
@@ -202,7 +201,11 @@ export default function LoginModal({
         fetch(`https://${apiUrlBase}/api/v1/Users/widgetlogin/${apiKey}?username=${username}&password=${password}`, { headers })
             .then((res) => res.json())
             .then((response) => {
-                window.location.href = response.data
+                console.log("Response from login:", response);
+                debugger;
+                if (response && response.code === 200 && response.data){
+                    window.location.href = response.data
+                }
             })
             .catch(() => {
                 sethaveError(true);
