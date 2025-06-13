@@ -13,9 +13,9 @@
       language="en" 
       secondary-color="#F0F0F0" 
       primary-color="#1D7CE3"   
-      url-to-register="/registro"
+      url-to-register="https://hotelbrand.beds2bpro.es/es/registers"
       client-app-domain="hotelbrand.beds2bpro.es"
-      api-key="<your api key>"
+      api-key="105d7dda-fdb0-4053-850d-a78f94f7431a"
       mode ="modal"
     > </login-modal>
 
