@@ -201,8 +201,6 @@ export default function LoginModal({
         fetch(`https://${apiUrlBase}/api/v1/Users/widgetlogin/${apiKey}?username=${username}&password=${password}`, { headers })
             .then((res) => res.json())
             .then((response) => {
-                console.log("Response from login:", response);
-                debugger;
                 if (response && response.code === 200 && response.data){
                     window.location.href = response.data
                 }
@@ -226,7 +224,7 @@ export default function LoginModal({
                 app: "wa"
             }
 
-            fetch(`https://${apiUrlBase}/api/v1/Users/RecoverPassword`, { headers, body: JSON.stringify(body), method: "POST" })
+            fetch(`https://${apiUrlBase}/api/v1/Users/RecoverPasswordFromWidget`, { headers, body: JSON.stringify(body), method: "POST" })
                 .then(response => {
                     if (!response.ok) {
                         showHostNotification("error", t("forget-password-error-title"), t("forget-password-error-description"));
