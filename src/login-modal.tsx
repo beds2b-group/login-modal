@@ -5,7 +5,7 @@ import css from "./login-modal.css"; // esto será un string
 import { useForm } from "antd/es/form/Form";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import i18n from "./i18n";
+import i18n from "./i18n.js";
 import { StyleProvider } from '@ant-design/cssinjs';
 import HTMLReactParser from "html-react-parser";
 
@@ -136,16 +136,15 @@ class LoginModalElement extends HTMLElement {
 
     private updateColors = (styles: StylesForLoginModalProps) => {
         this.styleElement.textContent = `
-    :${"root"} {
-      --primary-client-color-login-modal: ${styles.primaryColor || '#1890ff'};
-      --secondary-client-color-login-modal: ${styles.secondaryColor || '#40a9ff'};
-    }
-       :${"host"} {
-      --primary-client-color-login-modal: ${styles.primaryColor || '#1890ff'};
-      --secondary-client-color-login-modal: ${styles.secondaryColor || '#40a9ff'};
-    }
-    ${css}
-  `;
+                :host, :root {
+                    --primary-client-color-login-modal: ${styles.primaryColor || "#1890ff"};
+                    --secondary-client-color-login-modal: ${styles.secondaryColor || "#40a9ff"};
+                }
+
+                ${css}
+            `;
+
+
     };
     private setLanguage(lang: string) {
         return i18n.changeLanguage(lang);
@@ -370,26 +369,60 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
         }
 
     }
-    return <Modal className="app-modal" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'" }} title={t("forget-password-modal-title")} open={showmodal} footer={null} onCancel={() => onClose?.()}>
-        <div className="forget-password-form">
-            <Form form={formForgetPassword} onFinish={onFinishFormForgetPassword} layout="horizontal">
-                <Form.Item
-                    label={t("forget-password-form.email")}
-                    name="email"
-                    rules={[{ required: true, message: t("validations.required-field")! }]}
+    return (
+        <Modal
+            className="app-modal"
+            title={t("forget-password-modal-title")}
+            open={showmodal}
+            footer={null}
+            onCancel={() => onClose?.()}
+        >
+            <div className="forget-password-form">
+                <Form
+                    form={formForgetPassword}
+                    layout="vertical"
+                    onFinish={onFinishFormForgetPassword}
                 >
-                    <Input className="app-input" type="email" />
-                </Form.Item>
-                <p style={{ color: sendEmailMessage == t("error-email-sending") ? "red" : "green", minHeight: '22px', marginTop: '0' }}> {sendEmailMessage}</p>
-                <div style={{ display: 'flex', width: '100%', alignItems: 'center', gap: '10px', justifyContent: 'end' }} className="actions">
-                    <Button style={{ borderRadius: "2px" }} type="default" key="back" onClick={onCancelPush}>
-                        {t("forget-password-form.cancel")}
-                    </Button>
-                    <Button disabled={loadingForgetPassword} className="app-button" key="submit" htmlType="submit" type="primary" loading={loadingForgetPassword}>
-                        {t("forget-password-form.submit")}
-                    </Button>
-                </div>
-            </Form>
-        </div>
-    </Modal>
+                    <Form.Item
+                        label={t("forget-password-form.email")}
+                        name="email"
+                        rules={[{ required: true, message: t("validations.required-field")! }]}
+                    >
+                        <Input className="app-input" type="email" />
+                    </Form.Item>
+
+                    <p
+                        style={{
+                            color: sendEmailMessage === t("error-email-sending") ? "red" : "green",
+                            minHeight: '22px',
+                            marginTop: 0
+                        }}
+                    >
+                        {sendEmailMessage}
+                    </p>
+
+                    <div className="actions">
+                        <Button
+                            type="default"
+                            onClick={onCancelPush}
+                            className="app-cancel"
+                        >
+                            {t("forget-password-form.cancel")}
+                        </Button>
+
+                        <Button
+                            htmlType="submit"
+                            className="app-button"
+                            loading={loadingForgetPassword}
+                            disabled={loadingForgetPassword}
+                        >
+                            {t("forget-password-form.submit")}
+                        </Button>
+                    </div>
+                </Form>
+            </div>
+        </Modal>
+    );
+
+
 }

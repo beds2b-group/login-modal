@@ -133,3 +133,30 @@
 .app-modal .ant-modal-footer {
   padding: 20px;
 }
+
+
+.forget-password-form {
+  .actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .ant-form-item-label > label {
+    font-weight: 500;
+    font-family: Montserrat;
+  }
+
+  .app-input {
+    width: 100%;
+  }
+}
+
+.forget-password-form,
+.forget-password-form .ant-form-item-label > label,
+.forget-password-form .ant-input,
+.forget-password-form .ant-btn {
+    font-family: inherit !important; 
+    font-size: 16px; 
+}
