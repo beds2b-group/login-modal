@@ -132,16 +132,51 @@ class LoginModalElement extends HTMLElement {
         this.updateColors(this.props.styles || {});
         this.renderReactComponent();
     }
-    private updateColors = (styles: StylesForLoginModalProps) => {
-        this.styleElement.textContent = `
+   private updateColors = (styles: StylesForLoginModalProps) => {
+    this.styleElement.textContent = `
         :host {
             --primary-client-color-login-modal: ${styles.primaryColor || "#1890ff"};
             --secondary-client-color-login-modal: ${styles.secondaryColor || "#40a9ff"};
         }
 
         ${css}
+
+
+        .app-button {
+            border-radius: 2px !important;
+            background: var(--primary-client-color-login-modal) !important;
+            border-color: var(--primary-client-color-login-modal) !important;
+            color: white !important;
+        }
+
+        .app-button:hover {
+            transition: all 0.5s !important;
+            background-color: var(--secondary-client-color-login-modal) !important;
+            border-color: var(--secondary-client-color-login-modal) !important;
+            color: white !important;
+        }
+
+        .app-cancel {
+            border-radius: 2px !important;
+            padding: 0 16px;
+            height: 38px;
+        }
+
+        .forget-password-form .actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+
+        .forget-password-form .ant-btn {
+            font-family: inherit !important;
+            font-size: 16px !important;
+        }
     `;
-    };
+};
+
 
 
     private setLanguage(lang: string) {
@@ -355,7 +390,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                             json.message || t("forget-password-error-description")
                         );
 
-                        setSendEmailMessage(t("error-email-sending"));
+                        setSendEmailMessage(json.message || t("error-email-sending"));
 
                         // Esto evita que siga al siguiente .then()
                         return Promise.reject("error");
