@@ -5,7 +5,7 @@ import css from "./login-modal.css"; // esto será un string
 import { useForm } from "antd/es/form/Form";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import i18n from "./i18n";
+import i18n from "./i18n.js";
 import { StyleProvider } from '@ant-design/cssinjs';
 import HTMLReactParser from "html-react-parser";
 
@@ -58,10 +58,11 @@ class LoginModalElement extends HTMLElement {
         this.mountPoint = document.createElement("div");
         const shadow = this.attachShadow({ mode: "open" });
 
-        // 👉 Crear un <style> con el contenido del CSS y añadirlo al shadowRoot
+        //  Crear un <style> con el contenido del CSS y añadirlo al shadowRoot
         this.styleElement = document.createElement("style");
         this.styleElement.textContent = css;
-        document.head.appendChild(this.styleElement);
+        shadow.appendChild(this.styleElement);  //  DENTRO DEL SHADOW
+
 
         shadow.appendChild(this.mountPoint);
 
@@ -85,9 +86,7 @@ class LoginModalElement extends HTMLElement {
             mode: this.getAttribute("mode") as TypeLoginModalProps || "default",
             env: this.getAttribute("env") as EnvProps || "pro"
         };
-        if (this.props.mode === "default" && !this.shadowRoot!.contains(this.styleElement)) {
-            this.shadowRoot!.appendChild(this.styleElement);
-        }
+
         this.renderReactComponent();
     }
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
@@ -133,20 +132,18 @@ class LoginModalElement extends HTMLElement {
         this.updateColors(this.props.styles || {});
         this.renderReactComponent();
     }
-
     private updateColors = (styles: StylesForLoginModalProps) => {
         this.styleElement.textContent = `
-    :${"root"} {
-      --primary-client-color-login-modal: ${styles.primaryColor || '#1890ff'};
-      --secondary-client-color-login-modal: ${styles.secondaryColor || '#40a9ff'};
-    }
-       :${"host"} {
-      --primary-client-color-login-modal: ${styles.primaryColor || '#1890ff'};
-      --secondary-client-color-login-modal: ${styles.secondaryColor || '#40a9ff'};
-    }
-    ${css}
-  `;
+        :host {
+            --primary-client-color-login-modal: ${styles.primaryColor || "#1890ff"};
+            --secondary-client-color-login-modal: ${styles.secondaryColor || "#40a9ff"};
+        }
+
+        ${css}
+    `;
     };
+
+
     private setLanguage(lang: string) {
         return i18n.changeLanguage(lang);
     }
@@ -340,27 +337,60 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                 app: "wa"
             }
 
-            fetch(`https://${apiUrlBase}/api/v1/Users/RecoverPasswordFromWidget`, { headers, body: JSON.stringify(body), method: "POST" })
-                .then(response => {
-                    console.log('Response from recovery email:', response);
+            fetch(`https://${apiUrlBase}/api/v1/Users/RecoverPasswordFromWidget`, {
+                headers,
+                body: JSON.stringify(body),
+                method: "POST"
+            })
+                .then(async response => {
+
+                    // Parseas JSON una sola vez
+                    const json = await response.json();
+
+                    // Puedes comprobar error Y mostrar mensaje del JSON
                     if (!response.ok) {
-                        showHostNotification("error", t("forget-password-error-title"), t("forget-password-error-description"));
+                        showHostNotification(
+                            "error",
+                            t("forget-password-error-title"),
+                            json.message || t("forget-password-error-description")
+                        );
+
                         setSendEmailMessage(t("error-email-sending"));
+
+                        // Esto evita que siga al siguiente .then()
+                        return Promise.reject("error");
                     }
-                    return response.json();
-                }).then((r) => {
-                    if (r && r.typeText === "success") {
-                        showHostNotification("success", t("forget-password-email-sent-title"), HTMLReactParser(t("forget-password-email-sent-description", { email })));
-                        setSendEmailMessage("email-sent-success");
+
+                    // Si todo va bien → pasas el JSON al siguiente .then()
+                    return json;
+                })
+                .then(r => {
+
+                    // Aquí r ya es tu JSON bueno
+                    if (r.type === 1) {
+                        showHostNotification(
+                            "success",
+                            t("forget-password-email-sent-title"),
+                            HTMLReactParser(
+                                t("forget-password-email-sent-description", { email })
+                            )
+                        );
+
+                        setSendEmailMessage(t("email-sent-success"));
                     }
-                }).catch((error) => {
-                    console.error('Error sending recovery email:', error);
-                    showHostNotification("error", t("forget-password-error-title"), t("forget-password-error-description"));
+                })
+                .catch(error => {
+
+                    showHostNotification(
+                        "error",
+                        t("forget-password-error-title"),
+                        t("forget-password-error-description")
+                    );
                 })
                 .finally(() => {
                     setLoadingForgetPassword(false);
                     formForgetPassword.resetFields();
-                })
+                });
 
 
 
@@ -370,26 +400,60 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
         }
 
     }
-    return <Modal className="app-modal" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'" }} title={t("forget-password-modal-title")} open={showmodal} footer={null} onCancel={() => onClose?.()}>
-        <div className="forget-password-form">
-            <Form form={formForgetPassword} onFinish={onFinishFormForgetPassword} layout="horizontal">
-                <Form.Item
-                    label={t("forget-password-form.email")}
-                    name="email"
-                    rules={[{ required: true, message: t("validations.required-field")! }]}
+    return (
+        <Modal
+            className="app-modal"
+            title={t("forget-password-modal-title")}
+            open={showmodal}
+            footer={null}
+            onCancel={() => onClose?.()}
+        >
+            <div className="forget-password-form">
+                <Form
+                    form={formForgetPassword}
+                    layout="vertical"
+                    onFinish={onFinishFormForgetPassword}
                 >
-                    <Input className="app-input" type="email" />
-                </Form.Item>
-                <p style={{ color: sendEmailMessage == t("error-email-sending") ? "red" : "green", minHeight: '22px', marginTop: '0' }}> {sendEmailMessage}</p>
-                <div style={{ display: 'flex', width: '100%', alignItems: 'center', gap: '10px', justifyContent: 'end' }} className="actions">
-                    <Button style={{ borderRadius: "2px" }} type="default" key="back" onClick={onCancelPush}>
-                        {t("forget-password-form.cancel")}
-                    </Button>
-                    <Button disabled={loadingForgetPassword} className="app-button" key="submit" htmlType="submit" type="primary" loading={loadingForgetPassword}>
-                        {t("forget-password-form.submit")}
-                    </Button>
-                </div>
-            </Form>
-        </div>
-    </Modal>
+                    <Form.Item
+                        label={t("forget-password-form.email")}
+                        name="email"
+                        rules={[{ required: true, message: t("validations.required-field")! }]}
+                    >
+                        <Input className="app-input" type="email" />
+                    </Form.Item>
+
+                    <p
+                        style={{
+                            color: sendEmailMessage === t("error-email-sending") ? "red" : "green",
+                            minHeight: '22px',
+                            marginTop: 0
+                        }}
+                    >
+                        {sendEmailMessage}
+                    </p>
+
+                    <div className="actions">
+                        <Button
+                            type="default"
+                            onClick={onCancelPush}
+                            className="app-cancel"
+                        >
+                            {t("forget-password-form.cancel")}
+                        </Button>
+
+                        <Button
+                            htmlType="submit"
+                            className="app-button"
+                            loading={loadingForgetPassword}
+                            disabled={loadingForgetPassword}
+                        >
+                            {t("forget-password-form.submit")}
+                        </Button>
+                    </div>
+                </Form>
+            </div>
+        </Modal>
+    );
+
+
 }
