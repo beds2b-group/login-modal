@@ -365,20 +365,20 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                     return json;
                 })
                 .then(r => {
-
-                    // Aquí r ya es tu JSON bueno
                     if (r.type === 1) {
+
+                        // Notificación del host
                         showHostNotification(
                             "success",
                             t("forget-password-email-sent-title"),
-                            HTMLReactParser(
-                                t("forget-password-email-sent-description", { email })
-                            )
+                            r.message // <-- AQUÍ USAS EL MENSAJE DEL SERVIDOR
                         );
 
-                        setSendEmailMessage(t("email-sent-success"));
+                        // Mostrar mensaje en el formulario
+                        setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
                     }
                 })
+
                 .catch(error => {
 
                     showHostNotification(
