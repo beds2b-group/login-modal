@@ -258,7 +258,7 @@ export default function LoginModal({
                     window.location.href = response.data
                     setErrorMessage(" ");
                 } else {
-                    setErrorMessage(t("login-error-message"));
+                    setErrorMessage(response.message || t("login-error-message"));
                 }
             })
             .catch(() => {
