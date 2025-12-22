@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal, notification } from "antd";
 import { ReactNode, use, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import css from "./login-modal.css"; // esto será un string
@@ -233,7 +233,7 @@ export default function LoginModal({
     const [form] = useForm();
     const [doingLogin, setDoingLogin] = useState(false);
     const [visibleState, setVisibleState] = useState(visible);
-    
+
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Access-Control-Allow-Origin', '*');
@@ -308,7 +308,7 @@ export default function LoginModal({
                             {t("reminderPasswordLink") || "Forgot your password?"}</span>
                     </div>
 
-              { /*     <p style={{ color: 'red', minHeight: '22px', marginTop: '0' }}>{errorMessage}</p>*/}
+                    { /*     <p style={{ color: 'red', minHeight: '22px', marginTop: '0' }}>{errorMessage}</p>*/}
                     <Button size="large" className="app-button btn-submit" htmlType="submit">
                         {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
                     </Button>
@@ -343,7 +343,6 @@ export default function LoginModal({
                             <span className="app-colored-main-font app-link" onClick={() => onOpenRecoverPassword?.()}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
                         </div>
 
-                     {/*   <p style={{ color: 'red', minHeight: '22px', marginTop: '0' }}>{errorMessage}</p> */}
                         <Button size="large" className="app-button btn-submit" htmlType="submit">
                             {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
                         </Button>
@@ -364,7 +363,6 @@ export default function LoginModal({
 export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = false, onClose }: { apiUrlBase: string, clientAppDomain: string, showmodal?: boolean, onClose?: () => void }) {
     const { t } = useTranslation();
     const [formForgetPassword] = useForm();
-    const [sendEmailMessage, setSendEmailMessage] = useState("");
     const [loadingForgetPassword, setLoadingForgetPassword] = useState(false);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -402,11 +400,19 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                             t("forget-password-error-title"),
                             json.message || t("forget-password-error-description")
                         );
-
-                        setSendEmailMessage(json.message || t("error-email-sending"));
+                    
+                        notification.error({
+                            message: t("error"),
+                            description: json.message || t("forget-password-error-description"),
+                        });
 
                         // Esto evita que siga al siguiente .then()
                         return Promise.reject("error");
+                    } else if (response.ok && json.type === 1 && json.data == true) {
+                        notification.success({
+                            message: t("operation-done"),
+                            description: json.message,
+                        });
                     }
 
                     // Si todo va bien → pasas el JSON al siguiente .then()
@@ -423,7 +429,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                         );
 
                         // Mostrar mensaje en el formulario
-                        setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
+                      //  setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
                     }
                 })
 
@@ -470,15 +476,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                         <Input className="app-input" type="email" />
                     </Form.Item>
 
-                    <p
-                        style={{
-                            color: sendEmailMessage === t("error-email-sending") ? "red" : "green",
-                            minHeight: '22px',
-                            marginTop: 0
-                        }}
-                    >
-                        {sendEmailMessage}
-                    </p>
+                    
 
                     <div className="actions">
                         <Button

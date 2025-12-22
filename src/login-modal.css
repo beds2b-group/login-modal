@@ -6,6 +6,7 @@
   border-radius: 2px;
   width: 100%;
 }
+
 .app-input .ant-select-selector {
   border-radius: 2px;
   width: 100%;
@@ -17,6 +18,7 @@
   border-color: var(--primary-client-color-login-modal) !important;
   color: white !important;
 }
+
 .app-button:hover {
   transition: all 0.5s !important;
   background-color: var(--secondary-client-color-login-modal) !important;
@@ -29,9 +31,11 @@
   margin-bottom: 10px;
   padding: 5px 10px;
 }
+
 .app-button.full {
   width: 100%;
 }
+
 .app-button.middle {
   display: inline;
   width: 50%;
@@ -41,59 +45,73 @@
   cursor: pointer;
   color: var(--primary-client-color-login-modal);
 }
+
 .app-link.app-active-link {
   color: var(--primary-client-color-login-modal);
 }
+
 .app-link.app-active-link path {
   color: var(--primary-client-color-login-modal);
   fill: var(--primary-client-color-login-modal);
 }
+
 .app-link.no-underline {
   text-decoration: none;
 }
-.app-link:hover:not(.no-hover), .app-link:active:not(.no-hover) {
+
+.app-link:hover:not(.no-hover),
+.app-link:active:not(.no-hover) {
   color: var(--secondary-client-color-login-modal);
 }
-.app-link.no-hover:hover, .app-link.no-hover:active {
+
+.app-link.no-hover:hover,
+.app-link.no-hover:active {
   opacity: 0.9;
 }
 
 .login-form {
   min-width: 50%;
 }
+
 @media (max-width: 767px) {
   .login-form {
     transition: all 0.2s;
     min-width: 70%;
   }
 }
+
 @media (min-width: 768px) and (max-width: 1023px) {
   .login-form {
     transition: all 0.2s;
     min-width: 70%;
   }
 }
+
 .login-form .error-message {
   text-align: center;
   color: red;
   font-family: "Montserrat";
   margin-bottom: 20px;
 }
+
 .login-form .reminder-password-link {
   width: 100%;
   text-align: right;
   margin-top: -20px;
   margin-bottom: 20px;
 }
+
 .login-form .btn-submit {
   width: 100%;
   margin-bottom: 20px;
   border: none !important;
 }
+
 .login-form .not-register {
   width: 100% !important;
   text-align: center !important;
 }
+
 .login-form .not-register a {
   text-decoration: none !important;
 }
@@ -106,10 +124,12 @@
   font-weight: 400;
   line-height: normal;
 }
+
 .app-modal .ant-modal-content {
   border-radius: 2px;
   padding: 0;
 }
+
 @media (max-width: 767px) {
   .app-modal .ant-modal-content {
     width: 100vw;
@@ -120,43 +140,64 @@
     overflow: auto;
   }
 }
+
 .app-modal .ant-modal-header {
   border-bottom: 1px solid #f0f0f0;
 }
+
 .app-modal.no-header-boreder .ant-modal-header {
   border-bottom: none;
 }
+
 .app-modal .ant-modal-header {
   padding: 20px 40px 20px 20px;
 }
+
 .app-modal .ant-modal-body,
 .app-modal .ant-modal-footer {
   padding: 20px;
 }
 
 
-.forget-password-form {
-  .actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-  }
+/* =========================
+   Botones modal recuperar contraseña
+   ========================= */
 
-  .ant-form-item-label > label {
-    font-weight: 500;
-    font-family: Montserrat;
-  }
-
-  .app-input {
-    width: 100%;
-  }
+.forget-password-form .actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-.forget-password-form,
-.forget-password-form .ant-form-item-label > label,
-.forget-password-form .ant-input,
+/* Tamaño y forma común */
 .forget-password-form .ant-btn {
-    font-family: inherit !important; 
-    font-size: 16px; 
+  height: 40px;
+  min-width: 120px;
+  padding: 0 20px;
+  border-radius: 2px;
+  font-size: 16px;
+  box-shadow: none;
+}
+
+/* CANCELAR → secundario limpio */
+.forget-password-form .app-cancel {
+  background-color: #ffffff !important;
+  border: 1px solid #d9d9d9 !important;
+  color: #262626 !important;
+}
+
+.forget-password-form .app-cancel:hover {
+  border-color: var(--primary-client-color-login-modal) !important;
+  color: var(--primary-client-color-login-modal) !important;
+  background-color: #ffffff !important;
+}
+
+/* ENVIAR → primario fuerte */
+.forget-password-form .app-button {
+  border: none !important;
+}
+
+.forget-password-form .app-button:hover {
+  filter: brightness(1.05);
 }
