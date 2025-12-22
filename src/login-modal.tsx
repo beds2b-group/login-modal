@@ -460,7 +460,6 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
         <Modal
             className="app-modal"
             title={t("forget-password-modal-title")}
-            getContainer={false}
             open={showmodal}
             footer={null}
             onCancel={() => onClose?.()}
