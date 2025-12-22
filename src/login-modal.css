@@ -175,17 +175,13 @@
   padding: 20px;
 }
 
-
-/* =========================
-   Botones modal recuperar contraseña
-   ========================= */
+/* CONTENEDOR */
 .forget-password-form {
   text-align: right !important;
   font-family: "Montserrat" !important;
 }
 
-/* Botones estilo “captura buena” */
-.forget-password-form .actions button {
+.forget-password-form .actions .ant-btn {
   height: 32px !important;
   padding: 6px 16px !important;
   border-radius: 2px !important;
@@ -195,14 +191,14 @@
 }
 
 /* Cancelar */
-.forget-password-form .actions .app-cancel {
+.forget-password-form .actions .app-cancel.ant-btn {
   background: #fff !important;
   border: 1px solid #d9d9d9 !important;
   color: #262626 !important;
 }
 
 /* Enviar */
-.forget-password-form .actions .app-button {
+.forget-password-form .actions .app-button.ant-btn {
   background: var(--primary-client-color-login-modal) !important;
   border-color: var(--primary-client-color-login-modal) !important;
   color: #fff !important;
