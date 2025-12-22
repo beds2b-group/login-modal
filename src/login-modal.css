@@ -165,8 +165,8 @@
 
 .forget-password-form .actions {
   margin-top: 24px;
-  display: flex;
-  justify-content: flex-end;
+  display: flex !important;
+  justify-content: flex-end !important;
   gap: 12px;
 }
 
@@ -180,24 +180,35 @@
   box-shadow: none;
 }
 
-/* CANCELAR → secundario limpio */
-.forget-password-form .app-cancel {
+/* 🔥 Override fuerte AntD v5 + Shadow DOM */
+
+.forget-password-form .actions .ant-btn.ant-btn {
+  height: 40px !important;
+  min-width: 120px !important;
+  padding: 0 20px !important;
+  font-size: 16px !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+
+.forget-password-form .actions .app-cancel.ant-btn {
   background-color: #ffffff !important;
   border: 1px solid #d9d9d9 !important;
   color: #262626 !important;
 }
 
-.forget-password-form .app-cancel:hover {
+.forget-password-form .actions .app-cancel.ant-btn:hover {
   border-color: var(--primary-client-color-login-modal) !important;
   color: var(--primary-client-color-login-modal) !important;
   background-color: #ffffff !important;
 }
 
-/* ENVIAR → primario fuerte */
-.forget-password-form .app-button {
+/* ENVIAR */
+.forget-password-form .actions .app-button.ant-btn {
   border: none !important;
 }
 
-.forget-password-form .app-button:hover {
+.forget-password-form .actions .app-button.ant-btn:hover {
   filter: brightness(1.05);
 }
