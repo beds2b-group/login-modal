@@ -162,53 +162,31 @@
 /* =========================
    Botones modal recuperar contraseña
    ========================= */
-
-.forget-password-form .actions {
-  margin-top: 24px;
-  display: flex !important;
-  justify-content: flex-end !important;
-  gap: 12px;
+.forget-password-form {
+  text-align: right !important;
+  font-family: "Montserrat" !important;
 }
 
-/* Tamaño y forma común */
-.forget-password-form .ant-btn {
-  height: 40px;
-  min-width: 120px;
-  padding: 0 20px;
-  border-radius: 2px;
-  font-size: 16px;
-  box-shadow: none;
-}
-
-/* 🔥 Override fuerte AntD v5 + Shadow DOM */
-
-.forget-password-form .actions .ant-btn.ant-btn {
-  height: 40px !important;
-  min-width: 120px !important;
-  padding: 0 20px !important;
-  font-size: 16px !important;
+/* Botones estilo “captura buena” */
+.forget-password-form .actions button {
+  height: 32px !important;
+  padding: 6px 16px !important;
   border-radius: 2px !important;
+  font-size: 14px !important;
+  width: auto !important;
   box-shadow: none !important;
 }
 
-
-.forget-password-form .actions .app-cancel.ant-btn {
-  background-color: #ffffff !important;
+/* Cancelar */
+.forget-password-form .actions .app-cancel {
+  background: #fff !important;
   border: 1px solid #d9d9d9 !important;
   color: #262626 !important;
 }
 
-.forget-password-form .actions .app-cancel.ant-btn:hover {
+/* Enviar */
+.forget-password-form .actions .app-button {
+  background: var(--primary-client-color-login-modal) !important;
   border-color: var(--primary-client-color-login-modal) !important;
-  color: var(--primary-client-color-login-modal) !important;
-  background-color: #ffffff !important;
-}
-
-/* ENVIAR */
-.forget-password-form .actions .app-button.ant-btn {
-  border: none !important;
-}
-
-.forget-password-form .actions .app-button.ant-btn:hover {
-  filter: brightness(1.05);
+  color: #fff !important;
 }
