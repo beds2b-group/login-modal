@@ -363,7 +363,6 @@ export default function LoginModal({
 export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = false, onClose }: { apiUrlBase: string, clientAppDomain: string, showmodal?: boolean, onClose?: () => void }) {
     const { t } = useTranslation();
     const [formForgetPassword] = useForm();
-    const [sendEmailMessage, setSendEmailMessage] = useState("");
     const [loadingForgetPassword, setLoadingForgetPassword] = useState(false);
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -401,8 +400,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                             t("forget-password-error-title"),
                             json.message || t("forget-password-error-description")
                         );
-
-                        setSendEmailMessage(json.message || t("error-email-sending"));
+                    
                         notification.error({
                             message: t("error"),
                             description: json.message || t("forget-password-error-description"),
@@ -478,15 +476,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                         <Input className="app-input" type="email" />
                     </Form.Item>
 
-                    <p
-                        style={{
-                            color: sendEmailMessage === t("error-email-sending") ? "red" : "green",
-                            minHeight: '22px',
-                            marginTop: 0
-                        }}
-                    >
-                        {sendEmailMessage}
-                    </p>
+                    
 
                     <div className="actions">
                         <Button
