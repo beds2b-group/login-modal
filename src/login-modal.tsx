@@ -400,7 +400,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                             t("forget-password-error-title"),
                             json.message || t("forget-password-error-description")
                         );
-                    
+
                         notification.error({
                             message: t("error"),
                             description: json.message || t("forget-password-error-description"),
@@ -429,7 +429,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                         );
 
                         // Mostrar mensaje en el formulario
-                      //  setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
+                        //  setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
                     }
                 })
 
@@ -454,10 +454,15 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
         }
 
     }
+
+    const getShadowContainer = () =>
+        (document.querySelector('login-modal') as HTMLElement).shadowRoot as unknown as HTMLElement;
+
     return (
         <Modal
             className="app-modal"
             title={t("forget-password-modal-title")}
+            getContainer={getShadowContainer}
             open={showmodal}
             footer={null}
             onCancel={() => onClose?.()}
@@ -476,7 +481,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                         <Input className="app-input" type="email" />
                     </Form.Item>
 
-                    
+
 
                     <div className="actions">
                         <Button
