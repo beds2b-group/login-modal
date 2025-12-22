@@ -455,14 +455,12 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
 
     }
 
-    const getShadowContainer = () =>
-        (document.querySelector('login-modal') as HTMLElement).shadowRoot as unknown as HTMLElement;
 
     return (
         <Modal
             className="app-modal"
             title={t("forget-password-modal-title")}
-            getContainer={getShadowContainer}
+            getContainer={false}
             open={showmodal}
             footer={null}
             onCancel={() => onClose?.()}
