@@ -429,7 +429,7 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                         );
 
                         // Mostrar mensaje en el formulario
-                        setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
+                      //  setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
                     }
                 })
 
