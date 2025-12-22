@@ -132,8 +132,8 @@ class LoginModalElement extends HTMLElement {
         this.updateColors(this.props.styles || {});
         this.renderReactComponent();
     }
-   private updateColors = (styles: StylesForLoginModalProps) => {
-    this.styleElement.textContent = `
+    private updateColors = (styles: StylesForLoginModalProps) => {
+        this.styleElement.textContent = `
         :host {
             --primary-client-color-login-modal: ${styles.primaryColor || "#1890ff"};
             --secondary-client-color-login-modal: ${styles.secondaryColor || "#40a9ff"};
@@ -175,7 +175,7 @@ class LoginModalElement extends HTMLElement {
             font-size: 16px !important;
         }
     `;
-};
+    };
 
 
 
@@ -233,7 +233,7 @@ export default function LoginModal({
     const [form] = useForm();
     const [doingLogin, setDoingLogin] = useState(false);
     const [visibleState, setVisibleState] = useState(visible);
-    const [errorMessage, setErrorMessage] = useState(" ");
+    
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Access-Control-Allow-Origin', '*');
@@ -245,24 +245,37 @@ export default function LoginModal({
     const GetLanguageInUrl = (): string => IsLaguagePresentInUrl() ? `/${window.location.pathname.split("/")[1]}` : '';
     const getFormattedUrl = (path: string): string => `${(IsLaguagePresentInUrl() ? GetLanguageInUrl() : language)}/${path}`;
 
+
     const onFinish = (): void => {
         const username = form.getFieldValue("username");
         const password = form.getFieldValue("password");
 
         setDoingLogin(true);
+        form.setFields([
+            { name: 'password', errors: [] }
+        ])
 
         fetch(`https://${apiUrlBase}/api/v1/Users/widgetlogin/${apiKey}?username=${username}&password=${password}`, { headers })
             .then((res) => res.json())
             .then((response) => {
                 if (response && response.code === 200 && response.data) {
                     window.location.href = response.data
-                    setErrorMessage(" ");
                 } else {
-                    setErrorMessage(response.message || t("login-error-message"));
+                    form.setFields([
+                        {
+                            name: 'password',
+                            errors: [response.message || t("login-error-message")]
+                        }
+                    ]);
                 }
             })
             .catch(() => {
-                setErrorMessage(t("login-error-message"));
+                form.setFields([
+                    {
+                        name: 'password',
+                        errors: [t("login-error-message")]
+                    }
+                ]);
             })
             .finally(() => { setDoingLogin(false) });
 
@@ -295,7 +308,7 @@ export default function LoginModal({
                             {t("reminderPasswordLink") || "Forgot your password?"}</span>
                     </div>
 
-                    <p style={{ color: 'red', minHeight: '22px', marginTop: '0' }}>{errorMessage}</p>
+              { /*     <p style={{ color: 'red', minHeight: '22px', marginTop: '0' }}>{errorMessage}</p>*/}
                     <Button size="large" className="app-button btn-submit" htmlType="submit">
                         {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
                     </Button>
@@ -330,7 +343,7 @@ export default function LoginModal({
                             <span className="app-colored-main-font app-link" onClick={() => onOpenRecoverPassword?.()}>{t("reminderPasswordLink") || "Forgot your password?"}</span>
                         </div>
 
-                        <p style={{ color: 'red', minHeight: '22px', marginTop: '0' }}>{errorMessage}</p>
+                     {/*   <p style={{ color: 'red', minHeight: '22px', marginTop: '0' }}>{errorMessage}</p> */}
                         <Button size="large" className="app-button btn-submit" htmlType="submit">
                             {doingLogin ? <LoadingOutlined /> : ''}{t("accessTextButton") || "Access"}
                         </Button>
