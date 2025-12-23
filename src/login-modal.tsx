@@ -480,20 +480,47 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
 
 
 
-                    <div className="actions">
+                    <div
+                        className="actions"
+                        style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: 10,
+                        }}
+                    >
                         <Button
                             type="default"
                             onClick={onCancelPush}
-                            className="app-cancel"
+                            style={{
+                                height: 32,
+                                padding: "6px 16px",
+                                borderRadius: 2,
+                                fontSize: 14,
+                                fontFamily: "Montserrat",
+                                background: "#fff",
+                                border: "1px solid #d9d9d9",
+                                color: "var(--primary-client-color-login-modal)",
+                                boxShadow: "none",
+                            }}
                         >
                             {t("forget-password-form.cancel")}
                         </Button>
 
                         <Button
                             htmlType="submit"
-                            className="app-button"
                             loading={loadingForgetPassword}
                             disabled={loadingForgetPassword}
+                            style={{
+                                height: 32,
+                                padding: "6px 16px",
+                                borderRadius: 2,
+                                fontSize: 14,
+                                fontFamily: "Montserrat",
+                                background: "var(--primary-client-color-login-modal)",
+                                border: "1px solid var(--primary-client-color-login-modal)",
+                                color: "#fff",
+                                boxShadow: "none",
+                            }}
                         >
                             {t("forget-password-form.submit")}
                         </Button>
