@@ -181,7 +181,7 @@
 
 
 
-.app-modal .ant-modal-body .forget-password-form {
+.app-modal  .ant-modal-body .forget-password-form  .forget-password-form {
   text-align: right !important;
   font-family: "Montserrat" !important;
 }
@@ -213,4 +213,10 @@
   border-radius: 2px !important;
   font-size: 14px !important;
 
+}
+
+
+
+.ant-modal-root .ant-modal-wrap .ant-modal-content {
+  background-color: red !important;
 }
