@@ -191,15 +191,15 @@
 
 /* Cancelar */
 .app-modal .ant-modal-body .forget-password-form .actions .app-cancel {
-  background: var(--secondary-client-color-login-modal) !important;
-  color: var(--primary-client-color-login-modal) !important;
+  background: #f0f0f0 !important;
+  color: #262626 !important;
 
 }
 
 /* Enviar */
 .app-modal .ant-modal-body .forget-password-form .actions .app-button {
-  background: var(--primary-client-color-login-modal) !important;
-  color: var(--secondary-client-color-login-modal) !important;
+  background: #f0f0f0 !important;
+  color: #262626 !important;
 
 }
 
