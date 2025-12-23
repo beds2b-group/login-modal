@@ -133,48 +133,32 @@ class LoginModalElement extends HTMLElement {
         this.renderReactComponent();
     }
     private updateColors = (styles: StylesForLoginModalProps) => {
+
+        //  VARIABLES EN EL ELEMENTO REAL (NO SHADOW)
+        this.style.setProperty(
+            '--primary-client-color-login-modal',
+            styles.primaryColor || '#1890ff'
+        );
+
+        this.style.setProperty(
+            '--secondary-client-color-login-modal',
+            styles.secondaryColor || '#40a9ff'
+        );
+
         this.styleElement.textContent = `
-        :host {
-            --primary-client-color-login-modal: ${styles.primaryColor || "#1890ff"};
-            --secondary-client-color-login-modal: ${styles.secondaryColor || "#40a9ff"};
-        }
+    ${css}
 
-        ${css}
+    .app-button {
+      border-radius: 2px !important;
+      background: var(--primary-client-color-login-modal) !important;
+      border-color: var(--primary-client-color-login-modal) !important;
+      color: white !important;
+    }
 
-
-        .app-button {
-            border-radius: 2px !important;
-            background: var(--primary-client-color-login-modal) !important;
-            border-color: var(--primary-client-color-login-modal) !important;
-            color: white !important;
-        }
-
-        .app-button:hover {
-            transition: all 0.5s !important;
-            background-color: var(--secondary-client-color-login-modal) !important;
-            border-color: var(--secondary-client-color-login-modal) !important;
-            color: white !important;
-        }
-
-        .app-cancel {
-            border-radius: 2px !important;
-            padding: 0 16px;
-            height: 38px;
-        }
-
-        .forget-password-form .actions {
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-
-        .forget-password-form .ant-btn {
-            font-family: inherit !important;
-            font-size: 16px !important;
-        }
-    `;
+    .app-button:hover {
+      background-color: var(--secondary-client-color-login-modal) !important;
+    }
+  `;
     };
 
 
@@ -462,10 +446,6 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
             title={t("forget-password-modal-title")}
             open={showmodal}
             footer={null}
-            style={{ // con esto forzamos que la variales eten
-                ['--primary-client-color-login-modal' as any]: 'var(--primary-client-color-login-modal)',
-                ['--secondary-client-color-login-modal' as any]: 'var(--secondary-client-color-login-modal)',
-            }}
             onCancel={() => onClose?.()}
         >
             <div className="forget-password-form">
