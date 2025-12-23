@@ -462,6 +462,10 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
             title={t("forget-password-modal-title")}
             open={showmodal}
             footer={null}
+             style={{
+    ['--primary-client-color-login-modal' as any]: 'var(--primary-client-color-login-modal)',
+    ['--secondary-client-color-login-modal' as any]: 'var(--secondary-client-color-login-modal)',
+  }}
             onCancel={() => onClose?.()}
         >
             <div className="forget-password-form">
