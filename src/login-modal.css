@@ -159,7 +159,9 @@
   }
 }
 
-
+.app-modal-content {
+  background-color: red;
+}
 .app-modal .ant-modal-header {
   border-bottom: 1px solid #000000;
 }
