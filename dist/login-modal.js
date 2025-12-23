@@ -352,7 +352,7 @@ html body {
   }\r
 }\r
 \r
-.app-modal-content {\r
+.ant-modal-content {\r
   background-color: red;\r
 }\r
 .app-modal .ant-modal-header {\r
