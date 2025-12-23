@@ -125,6 +125,7 @@
   line-height: normal;
 
 }
+
 /* Overlay */
 .app-modal .ant-modal-mask {
   position: fixed !important;
@@ -179,15 +180,33 @@
 .forget-password-form {
   text-align: right !important;
   font-family: "Montserrat" !important;
+
+  .actions {
+    gap: 10px !important;
+
+    .app-cancel {
+      height: 32px !important;
+      padding: 6px 16px !important;
+      border-radius: 2px !important;
+      font-size: 14px !important;
+      width: auto !important;
+      box-shadow: none !important;
+      text-align: right !important;
+      font-family: "Montserrat" !important;
+    }
+  }
 }
 
-.forget-password-form .actions .ant-btn {
+.forget-password-form .actions .app-cancel {
   height: 32px !important;
   padding: 6px 16px !important;
   border-radius: 2px !important;
   font-size: 14px !important;
   width: auto !important;
   box-shadow: none !important;
+  text-align: right !important;
+  font-family: "Montserrat" !important;
+
 }
 
 /* Cancelar */
@@ -198,7 +217,7 @@
 }
 
 /* Enviar */
-.forget-password-form .actions .app-button.ant-btn {
+.forget-password-form .actions .app-cancel.ant-btn {
   background: var(--primary-client-color-login-modal) !important;
   border-color: var(--primary-client-color-login-modal) !important;
   color: #fff !important;
