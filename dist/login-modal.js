@@ -352,8 +352,9 @@ html body {
   }\r
 }\r
 \r
+\r
 .app-modal .ant-modal-header {\r
-  border-bottom: 1px solid #f0f0f0;\r
+  border-bottom: 1px solid #000000;\r
 }\r
 \r
 .app-modal.no-header-boreder .ant-modal-header {\r
