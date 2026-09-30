@@ -159,9 +159,7 @@
   }
 }
 
-.ant-modal-content {
-  background-color: red;
-}
+
 .app-modal .ant-modal-header {
   border-bottom: 1px solid #000000;
 }
@@ -216,7 +214,3 @@
 }
 
 
-
-.ant-modal-root .ant-modal-wrap .ant-modal-content {
-  background-color: red !important;
-}

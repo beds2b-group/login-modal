@@ -255,7 +255,7 @@ export default function LoginModal({
             { name: 'password', errors: [] }
         ])
 
-        fetch(`https://${apiUrlBase}/api/v1/Users/widgetlogin/${apiKey}?username=${username}&password=${password}`, { headers })
+        fetch(`https://${apiUrlBase}/api/v1/Users/widgetlogin/${apiKey}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`, { headers })
             .then((res) => res.json())
             .then((response) => {
                 if (response && response.code === 200 && response.data) {
