@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, notification } from "antd";
+import { App, Button, Form, Input, Modal } from "antd";
 import { ReactNode, use, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import css from "./login-modal.css"; // esto será un string
@@ -91,8 +91,12 @@ class LoginModalElement extends HTMLElement {
 
         // Los modales de antd se pintan en un portal. Por defecto va a document.body: fuera del shadow DOM,
         // sin nuestro CSS ni las variables de color y expuesto al CSS del host. Los mandamos a esta capa,
-        // que cuelga de <body> (no le afectan los contenedores del host) y tiene su propio shadow root.
+        // que tiene su propio shadow root y se coloca con placeOverlay().
         this.overlayHost = document.createElement("div");
+        // Fuera del flujo (no mueve el maquetado de donde se cuelgue) y con z-index propio
+        this.overlayHost.style.position = "absolute";
+        // Las teclas de nuestros modales no llegan al host: Escape cerraría también el popup de Elementor
+        this.overlayHost.addEventListener("keyup", (e) => e.stopPropagation());
         this.overlayRoot = this.overlayHost.attachShadow({ mode: "open" });
         this.overlayStyleElement = document.createElement("style");
         this.popupContainer = document.createElement("div");
@@ -102,9 +106,7 @@ class LoginModalElement extends HTMLElement {
     }
 
     connectedCallback() {
-        if (!this.overlayHost.isConnected) {
-            document.body.appendChild(this.overlayHost);
-        }
+        this.placeOverlay();
         if (!this.root) {
             this.root = ReactDOM.createRoot(this.mountPoint);
         }
@@ -239,10 +241,36 @@ class LoginModalElement extends HTMLElement {
         this.renderReactComponent(); // vuelve a renderizar con el modal abierto
     };
     private getPopupContainer = () => this.popupContainer;
+    // Los avisos (notification) también van a la capa, por encima de los modales
+    private overlayNotificationConfig = { getContainer: this.getPopupContainer };
+
+    // Si <login-modal> está dentro de una capa del host (p. ej. un popup de Elementor, position: fixed y
+    // z-index 9999), la capa de modales cuelga de ella y queda por encima. Si colgara de <body>, el popup
+    // taparía "Recuperar contraseña" y además Elementor cerraría su popup al hacer clic en nuestro modal
+    // (lo toma como un clic "fuera"). Sin capa del host, cuelga de <body>. Mínimo, el z-index de antd (1000).
+    private placeOverlay() {
+        let parent: Element = document.body;
+        let zIndex = 1000;
+        for (let el: Element | null = this; el && el !== document.body; el = el.parentElement ?? (el.getRootNode() as ShadowRoot).host ?? null) {
+            const style = getComputedStyle(el);
+            const z = parseInt(style.zIndex, 10);
+            if (!Number.isNaN(z)) zIndex = Math.max(zIndex, z + 1);
+            // Una capa con transform/filter no vale: los modales (position: fixed) se colocarían respecto a ella
+            if (el !== this && style.position === "fixed" && style.transform === "none" && style.filter === "none") {
+                parent = el;
+            }
+        }
+        this.overlayHost.style.zIndex = String(zIndex);
+        if (this.overlayHost.parentElement !== parent) {
+            parent.appendChild(this.overlayHost);
+        }
+    }
+
     private renderReactComponent() {
         if (!this.root) return;
 
         this.setLanguage(this.props.language || "es").then(() => {
+            if (this.isConnected) this.placeOverlay();
             const loginModal = (
                 <LoginModal
                     showRecoverPassword={this.showRecoverPasswordModal}
@@ -257,11 +285,15 @@ class LoginModalElement extends HTMLElement {
                 this.props.mode === "modal" ?
                     // Un único modal: "¿Olvidaste tu contraseña?" cambia su contenido en vez de abrir otro encima
                     <StyleProvider container={this.overlayRoot}>
-                        {loginModal}
+                        <App component={false} notification={this.overlayNotificationConfig}>
+                            {loginModal}
+                        </App>
                     </StyleProvider>
                     : <>
                         <StyleProvider container={this.overlayRoot}>
-                            <ModalRecoverPassword getContainer={this.getPopupContainer} onClose={this.handleCloseRecoverModal} showmodal={this.showRecoverPasswordModal} clientAppDomain={this.props.clientAppDomain || ''} apiUrlBase={this.props.env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es"} />
+                            <App component={false} notification={this.overlayNotificationConfig}>
+                                <ModalRecoverPassword getContainer={this.getPopupContainer} onClose={this.handleCloseRecoverModal} showmodal={this.showRecoverPasswordModal} clientAppDomain={this.props.clientAppDomain || ''} apiUrlBase={this.props.env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es"} />
+                            </App>
                         </StyleProvider>
                         <StyleProvider container={this.shadowRoot!}>
                             {loginModal}
@@ -273,7 +305,10 @@ class LoginModalElement extends HTMLElement {
     }
 }
 
-customElements.define("login-modal", LoginModalElement);
+// La web puede incluir el script más de una vez (p. ej. uno por cada popup de Elementor): se registra solo la primera
+if (!customElements.get("login-modal")) {
+    customElements.define("login-modal", LoginModalElement);
+}
 
 export default function LoginModal({
     visible,
@@ -462,6 +497,8 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
 
 export function RecoverPasswordForm({ apiUrlBase, clientAppDomain, onClose }: { apiUrlBase: string, clientAppDomain: string, onClose?: () => void }) {
     const { t } = useTranslation();
+    // De <App>: los avisos salen en la capa de modales, no en document.body (allí quedarían tapados)
+    const { notification } = App.useApp();
     const [formForgetPassword] = useForm();
     const [loadingForgetPassword, setLoadingForgetPassword] = useState(false);
     const headers = new Headers();
