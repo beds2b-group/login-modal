@@ -89,6 +89,15 @@ class LoginModalElement extends HTMLElement {
 
         shadow.appendChild(this.mountPoint);
 
+        // Si la web oculta el formulario estando en "Recuperar contraseña" (p. ej. cierra su popup con
+        // display: none), al volver a mostrarlo se ve otra vez el login. Oculto, el formulario mide 0x0.
+        new ResizeObserver(([entry]) => {
+            const { width, height } = entry.contentRect;
+            if (this.showRecoverPasswordModal && this.props.mode !== "modal" && width === 0 && height === 0) {
+                this.handleCloseRecoverModal();
+            }
+        }).observe(this.mountPoint);
+
         // Los modales de antd se pintan en un portal. Por defecto va a document.body: fuera del shadow DOM,
         // sin nuestro CSS ni las variables de color y expuesto al CSS del host. Los mandamos a esta capa,
         // que cuelga de <body> y tiene su propio shadow root. Aquí van el modal del modo "modal" y los avisos.
