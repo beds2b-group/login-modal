@@ -25,6 +25,9 @@ export interface LoginModalProps {
     mode?: TypeLoginModalProps,
     env: EnvProps,
     onOpenRecoverPassword?: () => void;
+    onCloseRecoverPassword?: () => void;
+    showRecoverPassword?: boolean;
+    getContainer?: () => HTMLElement;
 
 }
 export const showHostNotification = (type: string, message: string, description: string | ReactNode) => {
@@ -35,10 +38,29 @@ export const showHostNotification = (type: string, message: string, description:
     });
     window.dispatchEvent(event);
 };
+
+// antd solo bloquea el scroll del <body> cuando el modal se pinta directamente en document.body.
+// Los nuestros van a un contenedor propio, así que lo bloqueamos aquí (mismo CSS que usa antd).
+const useBodyScrollLock = (lock: boolean) => {
+    useEffect(() => {
+        if (!lock) return;
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        const style = document.createElement("style");
+        style.textContent = `html body { overflow-y: hidden; ${scrollbarWidth > 0 ? `width: calc(100% - ${scrollbarWidth}px);` : ""} }`;
+        document.head.appendChild(style);
+        return () => style.remove();
+    }, [lock]);
+};
+
 class LoginModalElement extends HTMLElement {
     private mountPoint: HTMLDivElement;
     private root: ReactDOM.Root | null = null;
     private styleElement: HTMLStyleElement;
+    // Capa para los modales: un <div> en <body> con su propio shadow root (ver constructor)
+    private overlayHost: HTMLDivElement;
+    private overlayRoot: ShadowRoot;
+    private overlayStyleElement: HTMLStyleElement;
+    private popupContainer: HTMLDivElement;
     private props: Partial<LoginModalProps> = {};
     private showRecoverPasswordModal = false;
     static get observedAttributes() {
@@ -50,7 +72,8 @@ class LoginModalElement extends HTMLElement {
             "url-to-register",
             "client-app-domain",
             "api-key",
-            "mode"
+            "mode",
+            "env"
         ];
     }
     constructor() {
@@ -66,10 +89,22 @@ class LoginModalElement extends HTMLElement {
 
         shadow.appendChild(this.mountPoint);
 
+        // Los modales de antd se pintan en un portal. Por defecto va a document.body: fuera del shadow DOM,
+        // sin nuestro CSS ni las variables de color y expuesto al CSS del host. Los mandamos a esta capa,
+        // que cuelga de <body> (no le afectan los contenedores del host) y tiene su propio shadow root.
+        this.overlayHost = document.createElement("div");
+        this.overlayRoot = this.overlayHost.attachShadow({ mode: "open" });
+        this.overlayStyleElement = document.createElement("style");
+        this.popupContainer = document.createElement("div");
+        this.overlayRoot.append(this.overlayStyleElement, this.popupContainer);
+
         this.updateColors({});
     }
 
     connectedCallback() {
+        if (!this.overlayHost.isConnected) {
+            document.body.appendChild(this.overlayHost);
+        }
         if (!this.root) {
             this.root = ReactDOM.createRoot(this.mountPoint);
         }
@@ -87,7 +122,18 @@ class LoginModalElement extends HTMLElement {
             env: this.getAttribute("env") as EnvProps || "pro"
         };
 
+        this.updateColors(this.props.styles || {});
         this.renderReactComponent();
+    }
+    disconnectedCallback() {
+        // Diferido: si el host solo mueve el elemento en el DOM se vuelve a conectar y no hay que desmontar
+        queueMicrotask(() => {
+            if (this.isConnected || !this.root) return;
+            this.root.unmount();
+            this.root = null;
+            this.showRecoverPasswordModal = false;
+            this.overlayHost.remove();
+        });
     }
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
         if (oldValue === newValue) return;
@@ -124,7 +170,7 @@ class LoginModalElement extends HTMLElement {
                 break;
 
         }
-        this.updateColors({});
+        this.updateColors(this.props.styles || {});
         this.renderReactComponent();
     }
     setProps(newProps: Partial<LoginModalProps>) {
@@ -175,6 +221,8 @@ class LoginModalElement extends HTMLElement {
             font-size: 16px !important;
         }
     `;
+        // Los modales viven en la capa de <body>: mismo CSS y mismas variables de color
+        this.overlayStyleElement.textContent = this.styleElement.textContent;
     };
 
 
@@ -190,25 +238,35 @@ class LoginModalElement extends HTMLElement {
         this.showRecoverPasswordModal = false;
         this.renderReactComponent(); // vuelve a renderizar con el modal abierto
     };
+    private getPopupContainer = () => this.popupContainer;
     private renderReactComponent() {
         if (!this.root) return;
 
         this.setLanguage(this.props.language || "es").then(() => {
-            this.root!.render(
-                this.props.mode === "modal" ? <>
-                    <ModalRecoverPassword onClose={this.handleCloseRecoverModal} showmodal={this.showRecoverPasswordModal} clientAppDomain={this.props.clientAppDomain || ''} apiUrlBase={this.props.env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es"} />
+            const loginModal = (
+                <LoginModal
+                    showRecoverPassword={this.showRecoverPasswordModal}
+                    onOpenRecoverPassword={this.handleOpenRecoverModal}
+                    onCloseRecoverPassword={this.handleCloseRecoverModal}
+                    getContainer={this.getPopupContainer}
+                    {...(this.props as LoginModalProps)} />
+            );
 
-                    <LoginModal onOpenRecoverPassword={this.handleOpenRecoverModal} {...(this.props as LoginModalProps)} />
-
-                </>
+            // Cada StyleProvider mete los estilos de antd en el shadow root donde se pinta su contenido
+            this.root?.render(
+                this.props.mode === "modal" ?
+                    // Un único modal: "¿Olvidaste tu contraseña?" cambia su contenido en vez de abrir otro encima
+                    <StyleProvider container={this.overlayRoot}>
+                        {loginModal}
+                    </StyleProvider>
                     : <>
-                        <ModalRecoverPassword onClose={this.handleCloseRecoverModal} showmodal={this.showRecoverPasswordModal} clientAppDomain={this.props.clientAppDomain || ''} apiUrlBase={this.props.env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es"} />
+                        <StyleProvider container={this.overlayRoot}>
+                            <ModalRecoverPassword getContainer={this.getPopupContainer} onClose={this.handleCloseRecoverModal} showmodal={this.showRecoverPasswordModal} clientAppDomain={this.props.clientAppDomain || ''} apiUrlBase={this.props.env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es"} />
+                        </StyleProvider>
                         <StyleProvider container={this.shadowRoot!}>
-                            <LoginModal onOpenRecoverPassword={this.handleOpenRecoverModal} {...(this.props as LoginModalProps)} />
+                            {loginModal}
                         </StyleProvider>
                     </>
-
-
             );
         });
 
@@ -225,7 +283,10 @@ export default function LoginModal({
     apiKey,
     mode,
     env,
-    onOpenRecoverPassword
+    onOpenRecoverPassword,
+    onCloseRecoverPassword,
+    showRecoverPassword = false,
+    getContainer
 }: LoginModalProps) {
 
     const apiUrlBase = env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es";
@@ -233,6 +294,12 @@ export default function LoginModal({
     const [form] = useForm();
     const [doingLogin, setDoingLogin] = useState(false);
     const [visibleState, setVisibleState] = useState(visible);
+
+    // Si el host cambia el atributo "visible" después de montar, el modal lo sigue
+    useEffect(() => {
+        setVisibleState(visible);
+    }, [visible]);
+    useBodyScrollLock(mode === "modal" && visibleState);
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
@@ -321,8 +388,21 @@ export default function LoginModal({
                 </div>
             </div>
             :
-            <Modal onCancel={() => setVisibleState(false)} className="" title={t('title')} open={visibleState} footer={null}>
-                <div className="login-form">
+            <Modal
+                onCancel={() => setVisibleState(false)}
+                // Si se cierra estando en "Recuperar contraseña", al volver a abrir se ve el login
+                afterClose={showRecoverPassword ? onCloseRecoverPassword : undefined}
+                className="app-modal"
+                title={showRecoverPassword ? t("forget-password-modal-title") : t('title')}
+                open={visibleState}
+                footer={null}
+                getContainer={getContainer}
+            >
+                {showRecoverPassword && (
+                    <RecoverPasswordForm apiUrlBase={apiUrlBase} clientAppDomain={clientAppDomain} onClose={onCloseRecoverPassword} />
+                )}
+                {/* Oculto (no desmontado) para no perder lo escrito al volver de "Recuperar contraseña" */}
+                <div className="login-form" hidden={showRecoverPassword}>
                     <Form form={form} onFinish={onFinish} layout="vertical">
                         <Form.Item
                             label={t("usernamePlaceholder") || "Username"}
@@ -360,7 +440,27 @@ export default function LoginModal({
     )
 }
 
-export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = false, onClose }: { apiUrlBase: string, clientAppDomain: string, showmodal?: boolean, onClose?: () => void }) {
+// Modo "default": el formulario de login va en la página y "Recuperar contraseña" se abre en un modal
+export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = false, onClose, getContainer }: { apiUrlBase: string, clientAppDomain: string, showmodal?: boolean, onClose?: () => void, getContainer?: () => HTMLElement }) {
+    const { t } = useTranslation();
+    useBodyScrollLock(showmodal);
+
+    return (
+        <Modal
+            className="app-modal"
+            title={t("forget-password-modal-title")}
+            open={showmodal}
+            footer={null}
+            getContainer={getContainer}
+            destroyOnHidden
+            onCancel={() => onClose?.()}
+        >
+            <RecoverPasswordForm apiUrlBase={apiUrlBase} clientAppDomain={clientAppDomain} onClose={onClose} />
+        </Modal>
+    );
+}
+
+export function RecoverPasswordForm({ apiUrlBase, clientAppDomain, onClose }: { apiUrlBase: string, clientAppDomain: string, onClose?: () => void }) {
     const { t } = useTranslation();
     const [formForgetPassword] = useForm();
     const [loadingForgetPassword, setLoadingForgetPassword] = useState(false);
@@ -394,56 +494,52 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
                     const json = await response.json();
 
                     // Puedes comprobar error Y mostrar mensaje del JSON
-                    if (!response.ok) {
-                        showHostNotification(
-                            "error",
-                            t("forget-password-error-title"),
-                            json.message || t("forget-password-error-description")
-                        );
-
-                        notification.error({
-                            message: t("error"),
-                            description: json.message || t("forget-password-error-description"),
-                        });
-
-                        // Esto evita que siga al siguiente .then()
-                        return Promise.reject("error");
-                    } else if (response.ok && json.type === 1 && json.data == true) {
-                        notification.success({
-                            message: t("operation-done"),
-                            description: json.message,
-                        });
+                    if (!response.ok || json.type !== 1) {
+                        // Esto evita que siga al siguiente .then(). El aviso de error se da una sola vez, en el catch
+                        return Promise.reject(json.message || t("forget-password-error-description"));
                     }
 
                     // Si todo va bien → pasas el JSON al siguiente .then()
                     return json;
                 })
                 .then(r => {
-                    if (r.type === 1) {
+                    notification.success({
+                        message: t("operation-done"),
+                        description: r.message,
+                    });
 
-                        // Notificación del host
-                        showHostNotification(
-                            "success",
-                            t("forget-password-email-sent-title"),
-                            r.message // <-- AQUÍ USAS EL MENSAJE DEL SERVIDOR
-                        );
+                    // Notificación del host
+                    showHostNotification(
+                        "success",
+                        t("forget-password-email-sent-title"),
+                        r.message // <-- AQUÍ USAS EL MENSAJE DEL SERVIDOR
+                    );
 
-                        // Mostrar mensaje en el formulario
-                        //  setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
-                    }
+                    // Mostrar mensaje en el formulario
+                    //  setSendEmailMessage(r.message); // <-- AQUÍ TAMBIÉN
+
+                    // Enviado: se vuelve al login (modo "modal") o se cierra el modal (modo "default")
+                    onCancelPush();
                 })
 
                 .catch(error => {
+                    // Mensaje del servidor si lo hay; si no (sin red, respuesta no JSON...) el genérico.
+                    // No se resetea el formulario para que el usuario pueda corregir el email.
+                    const description = typeof error === "string" ? error : t("forget-password-error-description");
+
+                    notification.error({
+                        message: t("error"),
+                        description,
+                    });
 
                     showHostNotification(
                         "error",
                         t("forget-password-error-title"),
-                        t("forget-password-error-description")
+                        description
                     );
                 })
                 .finally(() => {
                     setLoadingForgetPassword(false);
-                    formForgetPassword.resetFields();
                 });
 
 
@@ -457,50 +553,42 @@ export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = 
 
 
     return (
-        <Modal
-            className="app-modal"
-            title={t("forget-password-modal-title")}
-            open={showmodal}
-            footer={null}
-            onCancel={() => onClose?.()}
-        >
-            <div className="forget-password-form">
-                <Form
-                    form={formForgetPassword}
-                    layout="vertical"
-                    onFinish={onFinishFormForgetPassword}
+        <div className="forget-password-form">
+            <Form
+                form={formForgetPassword}
+                layout="vertical"
+                onFinish={onFinishFormForgetPassword}
+            >
+                <Form.Item
+                    label={t("forget-password-form.email")}
+                    name="email"
+                    rules={[{ required: true, message: t("validations.required-field")! }]}
                 >
-                    <Form.Item
-                        label={t("forget-password-form.email")}
-                        name="email"
-                        rules={[{ required: true, message: t("validations.required-field")! }]}
+                    <Input className="app-input" type="email" />
+                </Form.Item>
+
+
+
+                <div className="actions">
+                    <Button
+                        type="default"
+                        onClick={onCancelPush}
+                        className="app-cancel"
                     >
-                        <Input className="app-input" type="email" />
-                    </Form.Item>
+                        {t("forget-password-form.cancel")}
+                    </Button>
 
-
-
-                    <div className="actions">
-                        <Button
-                            type="default"
-                            onClick={onCancelPush}
-                            className="app-cancel"
-                        >
-                            {t("forget-password-form.cancel")}
-                        </Button>
-
-                        <Button
-                            htmlType="submit"
-                            className="app-button"
-                            loading={loadingForgetPassword}
-                            disabled={loadingForgetPassword}
-                        >
-                            {t("forget-password-form.submit")}
-                        </Button>
-                    </div>
-                </Form>
-            </div>
-        </Modal>
+                    <Button
+                        htmlType="submit"
+                        className="app-button"
+                        loading={loadingForgetPassword}
+                        disabled={loadingForgetPassword}
+                    >
+                        {t("forget-password-form.submit")}
+                    </Button>
+                </div>
+            </Form>
+        </div>
     );
 
 
