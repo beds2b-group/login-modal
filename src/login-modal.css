@@ -184,14 +184,22 @@
   font-family: "Montserrat" !important;
 }
 
-.app-modal .ant-modal-body .forget-password-form .actions {
+/* "Recuperar contraseña": dentro del modal (modo "modal") o en el sitio del formulario de login (modo "default") */
+.recover-password-inline .recover-password-title {
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.forget-password-form .actions {
   gap: 10px !important;
   display: flex !important;
   justify-content: flex-end !important;
 }
 
 /* Cancelar */
-.app-modal .ant-modal-body .forget-password-form .actions .app-cancel {
+.forget-password-form .actions .app-cancel {
   background: #f0f0f0 !important;
   color: #262626 !important;
 
@@ -200,7 +208,7 @@
 /* Enviar: usa .app-button (color principal), igual que "Entrar" */
 
 /* Botones */
-.app-modal .ant-modal-body .forget-password-form .actions .ant-btn {
+.forget-password-form .actions .ant-btn {
   height: 32px !important;
   padding: 6px 16px !important;
   border-radius: 2px !important;
