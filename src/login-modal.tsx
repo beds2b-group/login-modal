@@ -91,11 +91,12 @@ class LoginModalElement extends HTMLElement {
 
         // Los modales de antd se pintan en un portal. Por defecto va a document.body: fuera del shadow DOM,
         // sin nuestro CSS ni las variables de color y expuesto al CSS del host. Los mandamos a esta capa,
-        // que tiene su propio shadow root y se coloca con placeOverlay().
+        // que cuelga de <body> y tiene su propio shadow root. Aquí van el modal del modo "modal" y los avisos.
         this.overlayHost = document.createElement("div");
-        // Fuera del flujo (no mueve el maquetado de donde se cuelgue) y con z-index propio
+        // Fuera del flujo y por encima de todo lo de la página: cabeceras fijas, popups del host...
         this.overlayHost.style.position = "absolute";
-        // Las teclas de nuestros modales no llegan al host: Escape cerraría también el popup de Elementor
+        this.overlayHost.style.zIndex = "2147483000";
+        // Las teclas de nuestro modal no llegan al host (p. ej. Escape cerrando también un popup del host)
         this.overlayHost.addEventListener("keyup", (e) => e.stopPropagation());
         this.overlayRoot = this.overlayHost.attachShadow({ mode: "open" });
         this.overlayStyleElement = document.createElement("style");
@@ -106,7 +107,9 @@ class LoginModalElement extends HTMLElement {
     }
 
     connectedCallback() {
-        this.placeOverlay();
+        if (!this.overlayHost.isConnected) {
+            document.body.appendChild(this.overlayHost);
+        }
         if (!this.root) {
             this.root = ReactDOM.createRoot(this.mountPoint);
         }
@@ -244,33 +247,10 @@ class LoginModalElement extends HTMLElement {
     // Los avisos (notification) también van a la capa, por encima de los modales
     private overlayNotificationConfig = { getContainer: this.getPopupContainer };
 
-    // Si <login-modal> está dentro de una capa del host (p. ej. un popup de Elementor, position: fixed y
-    // z-index 9999), la capa de modales cuelga de ella y queda por encima. Si colgara de <body>, el popup
-    // taparía "Recuperar contraseña" y además Elementor cerraría su popup al hacer clic en nuestro modal
-    // (lo toma como un clic "fuera"). Sin capa del host, cuelga de <body>. Mínimo, el z-index de antd (1000).
-    private placeOverlay() {
-        let parent: Element = document.body;
-        let zIndex = 1000;
-        for (let el: Element | null = this; el && el !== document.body; el = el.parentElement ?? (el.getRootNode() as ShadowRoot).host ?? null) {
-            const style = getComputedStyle(el);
-            const z = parseInt(style.zIndex, 10);
-            if (!Number.isNaN(z)) zIndex = Math.max(zIndex, z + 1);
-            // Una capa con transform/filter no vale: los modales (position: fixed) se colocarían respecto a ella
-            if (el !== this && style.position === "fixed" && style.transform === "none" && style.filter === "none") {
-                parent = el;
-            }
-        }
-        this.overlayHost.style.zIndex = String(zIndex);
-        if (this.overlayHost.parentElement !== parent) {
-            parent.appendChild(this.overlayHost);
-        }
-    }
-
     private renderReactComponent() {
         if (!this.root) return;
 
         this.setLanguage(this.props.language || "es").then(() => {
-            if (this.isConnected) this.placeOverlay();
             const loginModal = (
                 <LoginModal
                     showRecoverPassword={this.showRecoverPasswordModal}
@@ -289,16 +269,16 @@ class LoginModalElement extends HTMLElement {
                             {loginModal}
                         </App>
                     </StyleProvider>
-                    : <>
-                        <StyleProvider container={this.overlayRoot}>
-                            <App component={false} notification={this.overlayNotificationConfig}>
-                                <ModalRecoverPassword getContainer={this.getPopupContainer} onClose={this.handleCloseRecoverModal} showmodal={this.showRecoverPasswordModal} clientAppDomain={this.props.clientAppDomain || ''} apiUrlBase={this.props.env == "pro" ? "pro.beds2b.es" : "dev-pro.beds2b.es"} />
-                            </App>
-                        </StyleProvider>
-                        <StyleProvider container={this.shadowRoot!}>
-                            {loginModal}
-                        </StyleProvider>
-                    </>
+                    // Formulario en la página: "Recuperar contraseña" sale en su sitio, sin modal. Un modal aparte
+                    // quedaba tapado o cerraba el popup del host (cabecera fija en Viva, popup de Elementor...).
+                    // <App> va en la capa para que los avisos se pinten allí con sus estilos.
+                    : <StyleProvider container={this.overlayRoot}>
+                        <App component={false} notification={this.overlayNotificationConfig}>
+                            <StyleProvider container={this.shadowRoot!}>
+                                {loginModal}
+                            </StyleProvider>
+                        </App>
+                    </StyleProvider>
             );
         });
 
@@ -387,7 +367,16 @@ export default function LoginModal({
     // #endregion 
     return (
         mode === "default" ?
-            <div className="login-form">
+            <>
+            {/* "Recuperar contraseña" sale en el sitio del formulario de login, no en un modal */}
+            {showRecoverPassword && (
+                <div className="recover-password-inline">
+                    <div className="recover-password-title">{t("forget-password-modal-title")}</div>
+                    <RecoverPasswordForm apiUrlBase={apiUrlBase} clientAppDomain={clientAppDomain} onClose={onCloseRecoverPassword} />
+                </div>
+            )}
+            {/* Oculto (no desmontado) para no perder lo escrito al volver de "Recuperar contraseña" */}
+            <div className="login-form" hidden={showRecoverPassword}>
                 <Form form={form} onFinish={onFinish} layout="vertical">
                     <Form.Item
                         label={t("usernamePlaceholder") || "Username"}
@@ -422,6 +411,7 @@ export default function LoginModal({
                     <a className="app-colored-main-font app-link" href={`${urlToRegister ?? getFormattedUrl('register')}`}>{t("notRegisterText") || "I'm not registered"}</a>
                 </div>
             </div>
+            </>
             :
             <Modal
                 onCancel={() => setVisibleState(false)}
@@ -473,26 +463,6 @@ export default function LoginModal({
 
 
     )
-}
-
-// Modo "default": el formulario de login va en la página y "Recuperar contraseña" se abre en un modal
-export function ModalRecoverPassword({ apiUrlBase, clientAppDomain, showmodal = false, onClose, getContainer }: { apiUrlBase: string, clientAppDomain: string, showmodal?: boolean, onClose?: () => void, getContainer?: () => HTMLElement }) {
-    const { t } = useTranslation();
-    useBodyScrollLock(showmodal);
-
-    return (
-        <Modal
-            className="app-modal"
-            title={t("forget-password-modal-title")}
-            open={showmodal}
-            footer={null}
-            getContainer={getContainer}
-            destroyOnHidden
-            onCancel={() => onClose?.()}
-        >
-            <RecoverPasswordForm apiUrlBase={apiUrlBase} clientAppDomain={clientAppDomain} onClose={onClose} />
-        </Modal>
-    );
 }
 
 export function RecoverPasswordForm({ apiUrlBase, clientAppDomain, onClose }: { apiUrlBase: string, clientAppDomain: string, onClose?: () => void }) {
