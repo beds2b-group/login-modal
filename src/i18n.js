@@ -25,6 +25,10 @@ i18n
           "email-sent-success": "Email sent successfully",
           "forget-password-email-sent-description": "An email has been sent to <strong>{{email}}</strong> with instructions to recover your password.",
           "login-error-message": "There was an error with your login. Please try again.",
+          "forget-password-error-title": "Password recovery failed",
+          "forget-password-error-description": "We couldn't send the recovery email. Please try again.",
+          "error": "Error",
+          "operation-done": "Operation Done",
         },
       },
       es: {
@@ -49,6 +53,8 @@ i18n
           "login-error-message": "Hubo un error en tu inicio de sesión. Por favor intenta de nuevo.",
           "error": "Error",
           "operation-done": "Operación realizada",
+          "forget-password-error-title": "No se ha podido recuperar la contraseña",
+          "forget-password-error-description": "No se ha podido enviar el correo de recuperación. Por favor inténtalo de nuevo.",
         },
       },
       pt:{
@@ -73,6 +79,8 @@ i18n
           "email-sent-success": "E-mail enviado com sucesso",
           "error": "Erro",
           "operation-done": "Operação concluída",
+          "forget-password-error-title": "Não foi possível recuperar a senha",
+          "forget-password-error-description": "Não foi possível enviar o e-mail de recuperação. Por favor, tente novamente.",
         },
       },
       fr:{
@@ -97,6 +105,8 @@ i18n
           "login-error-message": "Une erreur s'est produite lors de votre connexion. Veuillez réessayer.",
           "error": "Erreur",
           "operation-done": "Opération terminée",
+          "forget-password-error-title": "Impossible de récupérer le mot de passe",
+          "forget-password-error-description": "Impossible d'envoyer l'e-mail de récupération. Veuillez réessayer.",
         },
       },
       us:{
@@ -121,9 +131,11 @@ i18n
           "login-error-message": "There was an error with your login. Please try again.",
           "error": "Error",
           "operation-done": "Operation Done",
+          "forget-password-error-title": "Password recovery failed",
+          "forget-password-error-description": "We couldn't send the recovery email. Please try again.",
         },
       },
-      
+
       // Añade más idiomas aquí...
     },
     lng: "en", // idioma por defecto
